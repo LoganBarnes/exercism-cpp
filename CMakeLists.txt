@@ -32,3 +32,4 @@ add_compile_options(
 add_compile_definitions(EXERCISM_RUN_ALL_TESTS)
 
 add_subdirectory(leap)
+add_subdirectory(reverse-string)

@@ -1,8 +1,10 @@
-#if !defined(REVERSE_STRING_H)
-#define REVERSE_STRING_H
+#pragma once
 
-namespace reverse_string {
+#include <string>
 
-}  // namespace reverse_string
+namespace reverse_string
+{
 
-#endif // REVERSE_STRING_H
+auto reverse_string( std::string str ) -> std::string;
+
+} // namespace reverse_string

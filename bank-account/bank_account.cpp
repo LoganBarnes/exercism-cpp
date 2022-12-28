@@ -7,10 +7,7 @@ namespace {
 
 enum ThrowIf { Closed, Open };
 
-auto throw_if(
-    std::optional<Currency> const& balance,
-    ThrowIf                        should_throw
-) {
+auto throw_if(std::optional<Currency> const& balance, ThrowIf should_throw) {
     if (should_throw == ThrowIf::Closed && !balance) {
         throw std::runtime_error("Bank account is closed");
     }
@@ -39,9 +36,7 @@ auto safely_update_account(
         // Attempt to update the balance if it hasn't changed since
         // it was last accessed. If it has changed, 'last_known_value'
         // will be updated and the above changes can be applied again.
-    } while (
-        !balance.compare_exchange_weak(last_known_value, new_value)
-    );
+    } while (!balance.compare_exchange_weak(last_known_value, new_value));
 }
 
 } // namespace
@@ -49,19 +44,15 @@ auto safely_update_account(
 Bankaccount::Bankaccount() : balance_(std::nullopt) {}
 
 auto Bankaccount::open() -> void {
-    safely_update_account(
-        balance_,
-        ThrowIf::Open,
-        [](auto) { return std::make_optional(0); }
-    );
+    safely_update_account(balance_, ThrowIf::Open, [](auto) {
+        return std::make_optional(0);
+    });
 }
 
 auto Bankaccount::close() -> void {
-    safely_update_account(
-        balance_,
-        ThrowIf::Closed,
-        [](auto) { return std::nullopt; }
-    );
+    safely_update_account(balance_, ThrowIf::Closed, [](auto) {
+        return std::nullopt;
+    });
 }
 
 auto Bankaccount::deposit(Currency deposit_amount) -> void {
@@ -71,7 +62,9 @@ auto Bankaccount::deposit(Currency deposit_amount) -> void {
     safely_update_account(
         balance_,
         ThrowIf::Closed,
-        [&](auto balance) { return balance.value() + deposit_amount; }
+        [deposit_amount](auto balance) {
+            return balance.value() + deposit_amount;
+        }
     );
 }
 
@@ -82,7 +75,7 @@ auto Bankaccount::withdraw(Currency withdraw_amount) -> void {
     safely_update_account(
         balance_,
         ThrowIf::Closed,
-        [&](auto balance) {
+        [withdraw_amount](auto balance) {
             if (balance.value() < withdraw_amount) {
                 throw std::runtime_error("Cannot withdraw more than balance");
             }

@@ -17,7 +17,9 @@ public:
         , parent_(parent) {}
 
     auto data() const -> T const& { return data_; }
+
     auto left() const -> owned_node const& { return left_; }
+
     auto right() const -> owned_node const& { return right_; }
 
     auto insert(T data) -> void {
@@ -31,6 +33,7 @@ public:
     struct iterator;
 
     auto begin() const -> iterator { return left_ ? left_->begin() : this; }
+
     auto end() const -> iterator { return nullptr; }
 
 private:
@@ -55,26 +58,25 @@ private:
     }
 };
 
-// The most minimal, read-only iterator possible.
+// The most minimal, read-only iterator.
 template <typename T>
 struct binary_tree<T>::iterator {
-    iterator(raw_node tree) : tree_(tree) {}
+    iterator(raw_node node) : node_(node) {}
 
-    auto operator*() const -> T const& { return tree_->data(); }
+    auto operator*() const -> T const& { return node_->data(); }
 
-    auto operator++() -> iterator& {
-        if (tree_->right()) {
-            *this = tree_->right()->begin();
+    auto operator++() -> void {
+        if (node_->right()) {
+            *this = node_->right()->begin();
         } else {
-            tree_ = tree_->get_next_parent();
+            node_ = node_->get_next_parent();
         }
-        return *this;
     }
 
-    auto operator!=(iterator const& o) const { return tree_ != o.tree_; };
+    auto operator!=(iterator const& o) const { return node_ != o.node_; };
 
 private:
-    raw_node tree_;
+    raw_node node_;
 };
 
 } // namespace binary_search_tree

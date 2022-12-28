@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.21)
 project(Exercism CXX)
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 
 add_compile_options(
         # Strict warnings/errors with gcc and clang
@@ -34,3 +34,4 @@ add_compile_definitions(EXERCISM_RUN_ALL_TESTS)
 add_subdirectory(leap)
 add_subdirectory(reverse-string)
 add_subdirectory(space-age)
+add_subdirectory(bank-account)

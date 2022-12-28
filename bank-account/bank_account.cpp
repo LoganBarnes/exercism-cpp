@@ -21,8 +21,13 @@ template <typename UpdateCallback>
 auto update_account(std::atomic<std::optional<int>>& balance,
                     ThrowIf                          should_throw,
                     UpdateCallback const&            update_callback) {
+    // Get the existing state
     auto potential_balance = balance.load();
+
+    // Attempt to update the balance if it hasn't changed since it was last accessed.
+    // If it has changed, update the value of 'potential_balance' and try again.
     do {
+        // Check for errors
         throw_if(potential_balance, should_throw);
     } while (!balance.compare_exchange_weak(potential_balance, update_callback(potential_balance)));
 }

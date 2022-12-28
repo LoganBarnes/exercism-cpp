@@ -16,8 +16,8 @@ static void test_leaf(const tree_ptr<T> &tree,
                       const T& data, bool has_left, bool has_right)
 {
     REQUIRE(data == tree->data());
-    REQUIRE((bool) tree->left() == has_left);
-    REQUIRE((bool) tree->right() == has_right);
+    REQUIRE(!!tree->left() == has_left);
+    REQUIRE(!!tree->right() == has_right);
 }
 
 template<typename T>

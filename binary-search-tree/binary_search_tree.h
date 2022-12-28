@@ -1,8 +1,80 @@
-#if !defined(BINARY_SEARCH_TREE_H)
-#define BINARY_SEARCH_TREE_H
+#pragma once
+
+#include <memory>
 
 namespace binary_search_tree {
 
-}  // namespace binary_search_tree
+template <typename T>
+class binary_tree {
+public:
+    using owned_node = std::unique_ptr<binary_tree<T>>;
+    using raw_node   = binary_tree<T> const*;
 
-#endif // BINARY_SEARCH_TREE_H
+    explicit binary_tree(T data, raw_node parent = nullptr)
+        : data_(data)
+        , left_(nullptr)
+        , right_(nullptr)
+        , parent_(parent) {}
+
+    auto data() const -> T const& { return data_; }
+    auto left() const -> owned_node const& { return left_; }
+    auto right() const -> owned_node const& { return right_; }
+
+    auto insert(T data) -> void {
+        if (data_ < data) {
+            insert_or_create(right_, data);
+        } else {
+            insert_or_create(left_, data);
+        }
+    }
+
+    struct iterator;
+
+    auto begin() const -> iterator { return left_ ? left_->begin() : this; }
+    auto end() const -> iterator { return nullptr; }
+
+private:
+    T          data_;
+    owned_node left_;
+    owned_node right_;
+    raw_node   parent_;
+
+    auto insert_or_create(owned_node& node, T data) -> void {
+        if (node) {
+            node->insert(data);
+        } else {
+            node = std::make_unique<binary_tree<T>>(data, this);
+        }
+    }
+
+    auto get_next_parent() const -> raw_node {
+        if (!parent_ || parent_->left().get() == this) {
+            return parent_;
+        }
+        return parent_->get_next_parent();
+    }
+};
+
+// The most minimal, read-only iterator possible.
+template <typename T>
+struct binary_tree<T>::iterator {
+    iterator(raw_node tree) : tree_(tree) {}
+
+    auto operator*() const -> T const& { return tree_->data(); }
+
+    auto operator++() -> iterator& {
+        if (tree_->right()) {
+            *this = tree_->right()->begin();
+        } else {
+            tree_ = tree_->get_next_parent();
+        }
+        return *this;
+    }
+
+    auto operator!=(iterator const& o) const { return tree_ != o.tree_; };
+
+private:
+    raw_node tree_;
+};
+
+} // namespace binary_search_tree

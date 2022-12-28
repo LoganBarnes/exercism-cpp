@@ -25,20 +25,22 @@ auto safely_update_account(
     ThrowIf                               should_throw,
     UpdateCallback const&                 update_callback
 ) {
-    // Get the existing state
-    auto potential_balance = balance.load();
+    // Get the existing state.
+    auto last_known_value = balance.load();
 
-    // Attempt to update the balance if it hasn't changed since
-    // it was last accessed. If it has changed, update the value
-    // of 'potential_balance' and try again.
+    decltype(last_known_value) new_value;
     do {
-        // Check for errors
-        throw_if(potential_balance, should_throw);
+        // Check for errors.
+        throw_if(last_known_value, should_throw);
+
+        // Get the value that should replace 'last_known_value'.
+        new_value = update_callback(last_known_value);
+
+        // Attempt to update the balance if it hasn't changed since
+        // it was last accessed. If it has changed, 'last_known_value'
+        // will be updated and the above changes can be applied again.
     } while (
-        !balance.compare_exchange_weak(
-            potential_balance,
-            update_callback(potential_balance)
-        )
+        !balance.compare_exchange_weak(last_known_value, new_value)
     );
 }
 

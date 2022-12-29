@@ -1,8 +1,9 @@
-#if !defined(BINARY_SEARCH_H)
-#define BINARY_SEARCH_H
+#pragma once
+
+#include <vector>
 
 namespace binary_search {
 
-}  // namespace binary_search
+auto find(std::vector<int> const& data, int value) -> std::size_t;
 
-#endif // BINARY_SEARCH_H
+} // namespace binary_search

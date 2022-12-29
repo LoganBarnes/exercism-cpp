@@ -1,4 +1,4 @@
-#pragma
+#pragma once
 
 #include <stdexcept>
 #include <utility>
@@ -7,22 +7,30 @@ namespace queen_attack {
 
 using Pos = std::pair<int, int>;
 
-auto operator-(Pos const& lhs, Pos const& rhs) noexcept -> Pos;
+inline auto valid(Pos const& pos) {
+    return 0 <= pos.first && pos.first < 8 && 0 <= pos.second && pos.second < 8;
+}
 
-class chess_board {
-public:
-    chess_board(Pos white, Pos black);
+inline auto operator-(Pos const& lhs, Pos const& rhs) {
+    return std::make_pair(lhs.first - rhs.first, lhs.second - rhs.second);
+}
 
-    [[nodiscard]] auto white() const noexcept -> Pos const&;
-    [[nodiscard]] auto black() const noexcept -> Pos const&;
+struct chess_board {
+    chess_board(Pos white, Pos black) : white_(white), black_(black) {
+        if (!valid(white_) || !valid(black_)) { throw std::domain_error(""); }
+    }
 
-    auto can_attack() const noexcept -> bool;
+    auto white() const -> Pos const& { return white_; }
+    auto black() const -> Pos const& { return black_; }
 
-    static auto on_board(Pos const& pos) noexcept -> bool;
+    auto can_attack() const {
+        auto diff = white_ - black_;
+        return diff.first * diff.second == 0
+            || std::abs(diff.first) == std::abs(diff.second);
+    }
 
 private:
-    Pos white_;
-    Pos black_;
+    Pos white_, black_;
 };
 
 } // namespace queen_attack

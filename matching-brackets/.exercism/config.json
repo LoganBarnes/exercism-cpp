@@ -1,0 +1,26 @@
+{
+  "blurb": "Make sure the brackets and braces all match.",
+  "authors": [
+    "patricksjackson"
+  ],
+  "contributors": [
+    "elyashiv",
+    "jackhughesweb",
+    "KevinWMatthews",
+    "marvelou-s"
+  ],
+  "files": {
+    "solution": [
+      "matching_brackets.cpp",
+      "matching_brackets.h"
+    ],
+    "test": [
+      "matching_brackets_test.cpp"
+    ],
+    "example": [
+      ".meta/example.cpp",
+      ".meta/example.h"
+    ]
+  },
+  "source": "Ginna Baker"
+}

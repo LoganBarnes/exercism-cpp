@@ -5,32 +5,29 @@
 
 namespace queen_attack {
 
-using Pos = std::pair<int, int>;
+using namespace std;
 
-inline auto valid(Pos const& pos) {
-    return 0 <= pos.first && pos.first < 8 && 0 <= pos.second && pos.second < 8;
-}
+using Pos = pair<int, int>;
 
-inline auto operator-(Pos const& lhs, Pos const& rhs) {
-    return std::make_pair(lhs.first - rhs.first, lhs.second - rhs.second);
+inline auto on_board(Pos const& p) {
+    return 0 <= p.first && p.first < 8 && 0 <= p.second && p.second < 8;
 }
 
 struct chess_board {
-    chess_board(Pos white, Pos black) : white_(white), black_(black) {
-        if (!valid(white_) || !valid(black_)) { throw std::domain_error(""); }
+    chess_board(Pos white, Pos black) : w_(white), b_(black) {
+        if (!on_board(w_) || !on_board(b_)) { throw domain_error("Off board"); }
     }
 
-    auto white() const -> Pos const& { return white_; }
-    auto black() const -> Pos const& { return black_; }
+    auto white() const -> Pos const& { return w_; }
+    auto black() const -> Pos const& { return b_; }
 
     auto can_attack() const {
-        auto diff = white_ - black_;
-        return diff.first * diff.second == 0
-            || std::abs(diff.first) == std::abs(diff.second);
+        auto const d = make_pair(w_.first - b_.first, w_.second - b_.second);
+        return d.first * d.second == 0 || abs(d.first) == abs(d.second);
     }
 
 private:
-    Pos white_, black_;
+    Pos w_, b_;
 };
 
 } // namespace queen_attack

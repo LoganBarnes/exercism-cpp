@@ -1,8 +1,13 @@
-#if !defined(ALL_YOUR_BASE_H)
-#define ALL_YOUR_BASE_H
+#pragma once
+
+#include <vector>
 
 namespace all_your_base {
 
-}  // namespace all_your_base
+auto convert(
+    unsigned                     input_base,
+    std::vector<unsigned> const& input_digits,
+    unsigned                     output_base
+) -> std::vector<unsigned>;
 
-#endif // ALL_YOUR_BASE_H
+} // namespace all_your_base

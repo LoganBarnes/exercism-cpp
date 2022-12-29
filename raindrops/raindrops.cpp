@@ -5,14 +5,14 @@ namespace raindrops {
 auto convert(int input) -> std::string {
     auto result = std::string{};
 
-    if (input % 3 == 0) {
-        result += "Pling";
-    }
-    if (input % 5 == 0) {
-        result += "Plang";
-    }
-    if (input % 7 == 0) {
-        result += "Plong";
+    for (auto [factor, message] : {
+             std::make_pair(3, "Pling"),
+             std::make_pair(5, "Plang"),
+             std::make_pair(7, "Plong"),
+         }) {
+        if (input % factor == 0) {
+            result += message;
+        }
     }
 
     if (result.empty()) {

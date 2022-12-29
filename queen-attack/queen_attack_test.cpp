@@ -99,7 +99,7 @@ TEST_CASE("queens_can_attack_on_fourth_diagonal")
     REQUIRE(board.can_attack());
 }
 
-TEST_CASE("queens_cannot_attack_if_falling_diagonals_are_only_the_same_when_reflected_across_the_longest_falling_diagonal")
+TEST_CASE("blah")
 {
     const queen_attack::chess_board board{std::make_pair(4, 1), std::make_pair(2, 5)};
 

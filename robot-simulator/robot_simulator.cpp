@@ -1,5 +1,7 @@
 #include "robot_simulator.h"
 
+#include <stdexcept>
+
 namespace robot_simulator {
 
 Robot::Robot(Point position, Bearing bearing) noexcept

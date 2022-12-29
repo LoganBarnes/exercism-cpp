@@ -1,8 +1,11 @@
-#if !defined(GRAINS_H)
-#define GRAINS_H
+#pragma once
+
+#include <cstdlib>
 
 namespace grains {
 
-}  // namespace grains
+auto square(uint32_t s) -> uint64_t;
 
-#endif // GRAINS_H
+auto total() -> uint64_t;
+
+} // namespace grains

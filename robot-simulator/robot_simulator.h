@@ -7,33 +7,38 @@ namespace robot_simulator {
 
 using Point = std::pair<int, int>;
 
-enum class Bearing : uint8_t {
-    NORTH,
-    EAST,
-    SOUTH,
-    WEST,
-};
+enum Bearing { NORTH, EAST, SOUTH, WEST };
 
-class Robot {
-public:
-    explicit Robot(
-        Point position = {0, 0}, Bearing bearing = Bearing::NORTH
-    ) noexcept;
+struct Robot {
+    Robot(Point position = {0, 0}, Bearing bearing = Bearing::NORTH)
+        : pos_(position), bearing_(bearing) {}
 
-    [[nodiscard]] auto get_position() const noexcept -> Point const&;
-    [[nodiscard]] auto get_bearing() const noexcept -> Bearing;
+    auto get_position() const -> Point const& { return pos_; }
+    auto get_bearing() const -> Bearing { return bearing_; }
 
-    auto advance() noexcept -> void;
-    auto turn_right() noexcept -> void;
-    auto turn_left() noexcept -> void;
+    auto advance() -> void {
+        switch (bearing_) {
+            case Bearing::NORTH: ++pos_.second; break;
+            case Bearing::EAST:  ++pos_.first;  break;
+            case Bearing::SOUTH: --pos_.second; break;
+            case Bearing::WEST:  --pos_.first;  break;
+        }
+    }
+    auto turn_right() -> void { bearing_ = Bearing((bearing_ + 1) % 4); }
+    auto turn_left() -> void { bearing_ = Bearing((bearing_ + 3) % 4);}
 
-    /// \throws std::invalid_argument if the string contains a character
-    ///                               that is not 'A', 'L', or 'R'.
-    auto execute_sequence(std::string const& sequence) -> void;
+    auto execute_sequence(std::string const& sequence) -> void {
+        for (auto c : sequence) {
+            switch (c) {
+                case 'A': advance();    break;
+                case 'R': turn_right(); break;
+                case 'L': turn_left();  break;
+            }
+        }
+    }
 
 private:
-    Point   position_;
-    Bearing bearing_;
+    Point pos_; Bearing bearing_;
 };
 
 } // namespace robot_simulator

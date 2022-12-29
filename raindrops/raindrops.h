@@ -1,8 +1,9 @@
-#if !defined(RAINDROPS_H)
-#define RAINDROPS_H
+#pragma once
+
+#include <string>
 
 namespace raindrops {
 
-}  // namespace raindrops
+auto convert(int input) -> std::string;
 
-#endif // RAINDROPS_H
+} // namespace raindrops

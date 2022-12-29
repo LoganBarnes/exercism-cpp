@@ -114,4 +114,11 @@ TEST_CASE("nothing_is_found_when_the_left_and_right_bounds_cross")
     REQUIRE_THROWS_AS(binary_search::find(data, 0), std::domain_error);
 }
 
+TEST_CASE("nothing_is_found_when_list_is_not_sorted")
+{
+    const std::vector<int> data {1, 3, 5, 4, 2};
+
+    REQUIRE_THROWS_AS(binary_search::find(data, 2), std::domain_error);
+}
+
 #endif

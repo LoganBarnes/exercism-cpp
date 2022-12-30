@@ -1,5 +1,6 @@
 #pragma once
 
+#include <stdexcept>
 #include <vector>
 
 namespace circular_buffer {
@@ -14,7 +15,7 @@ public:
             throw std::domain_error("Buffer is empty");
         }
         auto&& result = std::move(buffer_[read_head_]);
-        read_head_ = safe_index(read_head_ + 1);
+        read_head_    = safe_index(read_head_ + 1);
         --size_;
         return result;
     }

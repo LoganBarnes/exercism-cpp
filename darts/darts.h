@@ -1,8 +1,7 @@
-#if !defined(DARTS_H)
-#define DARTS_H
+#pragma once
 
 namespace darts {
 
-} // namespace darts
+auto score(double x, double y) -> unsigned;
 
-#endif //DARTS_H
+} // namespace darts

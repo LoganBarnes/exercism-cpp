@@ -1,53 +1,31 @@
 #include "largest_series_product.h"
 
 #include <algorithm>
+#include <cctype>
 #include <numeric>
 #include <optional>
 #include <vector>
 
 namespace largest_series_product {
 
-auto largest_product(std::string const& digits, int span) -> unsigned {
-    // Handle all errors as soon as possible.
-    if (span < 0) {
-        throw std::domain_error("Negative span");
-    }
+using namespace std;
 
-    auto span_size = static_cast<unsigned>(span);
+auto mult(unsigned i, char c) {
+    if (!isdigit(c)) { throw std::domain_error("Invalid digit"); }
+    return i * static_cast<unsigned>(c - '0');
+}
 
-    if (digits.size() < span_size) {
-        throw std::domain_error("Span larger than digits");
-    }
-
-    auto actual_digits = std::vector<unsigned>(digits.size(), 0U);
-
-    std::transform(
-        digits.begin(),
-        digits.end(),
-        actual_digits.begin(),
-        [](char c) {
-            if ('0' > c || c > '9') {
-                throw std::domain_error("Invalid digit: " + std::string{c});
-            }
-            return static_cast<unsigned>(c - '0');
-        }
-    );
+auto largest_product(string const& d, int n) -> unsigned {
+    if (n < 0 || static_cast<int>(d.size()) < n) { throw domain_error("n"); }
 
     // Find the largest product now that all errors cases have been handled.
-    auto biggest_product = 0U;
+    auto p = 0U;
 
-    for (auto i = span_size; i <= actual_digits.size(); ++i) {
-        auto product = std::accumulate(
-            actual_digits.data() + i - span_size,
-            actual_digits.data() + i,
-            1U,
-            std::multiplies{}
-        );
-
-        biggest_product = std::max(biggest_product, product);
+    for (auto i = n; i <= static_cast<int>(d.size()); ++i) {
+        p = max(p, accumulate(d.data() + i - n, d.data() + i, 1U, mult));
     }
 
-    return biggest_product;
+    return p;
 }
 
 } // namespace largest_series_product

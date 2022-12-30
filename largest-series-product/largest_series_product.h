@@ -1,8 +1,9 @@
-#if !defined(LARGEST_SERIES_PRODUCT_H)
-#define LARGEST_SERIES_PRODUCT_H
+#pragma once
+
+#include <string>
 
 namespace largest_series_product {
 
-} // largest_series_product
+auto largest_product(std::string const& digits, int span) -> unsigned;
 
-#endif // LARGEST_SERIES_PRODUCT_H
+} // namespace largest_series_product

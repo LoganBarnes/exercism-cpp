@@ -7,15 +7,6 @@ cmake_minimum_required(VERSION 3.5.1)
 # Name the project after the exercise
 project(${exercise} CXX)
 
-# Download the CPM package manager
-set(CPM_DOWNLOAD_VERSION 0.34.0)
-set(CPM_DOWNLOAD_LOCATION "${CMAKE_BINARY_DIR}/cmake/CPM_${CPM_DOWNLOAD_VERSION}.cmake")
-file(DOWNLOAD
-    https://github.com/TheLartians/CPM.cmake/releases/download/v${CPM_DOWNLOAD_VERSION}/CPM.cmake
-    ${CPM_DOWNLOAD_LOCATION}
-)
-include(${CPM_DOWNLOAD_LOCATION})
-
 # Get a source filename from the exercise name by replacing -'s with _'s
 string(REPLACE "-" "_" file ${exercise})
 
@@ -71,11 +62,3 @@ endif()
 
 # Run the tests on every build
 add_custom_target(test_${exercise} ALL DEPENDS ${exercise} COMMAND ${exercise})
-
-# Download the range-v3 repo and link it to the exercise
-CPMAddPackage("gh:ericniebler/range-v3#0.12.0")
-
-if(range-v3_ADDED)
-    target_include_directories(${exercise} SYSTEM PUBLIC ${range-v3_SOURCE_DIR}/include)
-endif()
-

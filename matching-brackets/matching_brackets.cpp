@@ -2,4 +2,8 @@
 
 namespace matching_brackets {
 
+auto check(std::string const& input) -> bool {
+    return input.empty();
+}
+
 }  // namespace matching_brackets

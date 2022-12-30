@@ -1,8 +1,9 @@
-#if !defined(MATCHING_BRACKETS_H)
-#define MATCHING_BRACKETS_H
+#pragma once
+
+#include <string>
 
 namespace matching_brackets {
 
-}  // namespace matching_brackets
+auto check(std::string const& input) -> bool;
 
-#endif // MATCHING_BRACKETS_H
+}  // namespace matching_brackets

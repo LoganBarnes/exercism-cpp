@@ -1,8 +1,9 @@
-#if !defined(PANGRAM_H)
-#define PANGRAM_H
+#pragma once
+
+#include <string>
 
 namespace pangram {
 
-}  // namespace pangram
+auto is_pangram(std::string const& pangram) -> bool;
 
-#endif // PANGRAM_H
+}  // namespace pangram

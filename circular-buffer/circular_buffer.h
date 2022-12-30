@@ -14,7 +14,7 @@ public:
             throw std::domain_error("Buffer is empty");
         }
         auto&& result = std::move(buffer_[read_head_]);
-        advance_head(read_head_);
+        read_head_ = safe_index(read_head_ + 1);
         --size_;
         return result;
     }
@@ -27,28 +27,25 @@ public:
     }
 
     auto overwrite(T data) -> void {
-        buffer_[write_head_] = std::move(data);
+        buffer_[safe_index(read_head_ + size_)] = std::move(data);
         if (size_ == buffer_.size()) {
-            advance_head(read_head_);
+            read_head_ = safe_index(read_head_ + 1);
         } else {
             ++size_;
         }
-        advance_head(write_head_);
     }
 
     auto clear() -> void {
-        read_head_  = 0;
-        write_head_ = 0;
-        size_       = 0;
+        read_head_ = 0;
+        size_      = 0;
     }
 
 private:
     std::vector<T> buffer_;
-    size_t         read_head_  = 0;
-    size_t         write_head_ = 0;
-    size_t         size_       = 0;
+    size_t         read_head_ = 0;
+    size_t         size_      = 0;
 
-    auto advance_head(size_t& head) { head = (head + 1) % buffer_.size(); }
+    auto safe_index(size_t index) const { return index % buffer_.size(); }
 };
 
 } // namespace circular_buffer

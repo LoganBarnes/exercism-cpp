@@ -1,8 +1,14 @@
-#if !defined(HAMMING_H)
-#define HAMMING_H
+#pragma once
+
+#include <numeric>
+#include <string>
 
 namespace hamming {
 
-}  // namespace hamming
+inline auto compute(std::string const& l, std::string const& r) -> int {
+    if (l.size() != r.size()) { throw std::domain_error("Mismatched sizes"); }
 
-#endif // HAMMING_H
+    return std::inner_product(l.begin(), l.end(), r.begin(), 0, std::plus{}, std::not_equal_to{});
+}
+
+} // namespace hamming

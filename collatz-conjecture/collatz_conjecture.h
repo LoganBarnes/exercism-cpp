@@ -1,8 +1,9 @@
-#if !defined(COLLATZ_CONJECTURE_H)
-#define COLLATZ_CONJECTURE_H
+#pragma once
+
+#include <cstdint>
 
 namespace collatz_conjecture {
 
-}  // namespace collatz_conjecture
+auto steps(int n) -> uint64_t;
 
-#endif // COLLATZ_CONJECTURE_H
+} // namespace collatz_conjecture

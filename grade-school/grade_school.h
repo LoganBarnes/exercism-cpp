@@ -14,11 +14,12 @@ public:
 
     auto add(std::string name, Grade grade) -> void;
 
-    auto grade(Grade grade) const -> NameList;
+    auto grade(Grade grade) const -> NameList const&;
     auto roster() const -> GradeToNamesMap const&;
 
 private:
-    GradeToNamesMap roster_;
+    GradeToNamesMap roster_      = {};
+    NameList        empty_names_ = {};
 };
 
 } // namespace grade_school

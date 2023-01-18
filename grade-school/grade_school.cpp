@@ -4,19 +4,14 @@ namespace grade_school {
 
 auto school::add(std::string name, Grade grade) -> void {
     auto& names = roster_[grade];
-    if (auto iter = std::lower_bound(names.begin(), names.end(), name);
-        iter != names.end()) {
-        names.insert(iter, name);
-    } else {
-        names.emplace_back(name);
-    }
+    names.insert(std::lower_bound(names.begin(), names.end(), name), name);
 }
 
-auto school::grade(Grade grade) const -> NameList {
+auto school::grade(Grade grade) const -> NameList const& {
     if (auto iter = roster_.find(grade); iter != roster_.end()) {
         return iter->second;
     } else {
-        return {};
+        return empty_names_;
     }
 }
 

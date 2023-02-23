@@ -1,7 +1,5 @@
 #include "nucleotide_count.h"
 
-#include <set>
-
 namespace nucleotide_count {
 
 counter::counter(std::string const& dna)

@@ -8,6 +8,7 @@ namespace nucleotide_count {
 class counter {
 public:
     explicit counter(std::string const& dna);
+
     auto nucleotide_counts() const -> std::map<char, int> const&;
 
 private:

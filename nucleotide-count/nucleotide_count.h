@@ -1,8 +1,17 @@
-#if !defined(NUCLEOTIDE_COUNT_H)
-#define NUCLEOTIDE_COUNT_H
+#pragma once
+
+#include <map>
+#include <string>
 
 namespace nucleotide_count {
 
-}  // namespace nucleotide_count
+class counter {
+public:
+    explicit counter(std::string const& dna);
+    auto nucleotide_counts() const -> std::map<char, int> const&;
 
-#endif // NUCLEOTIDE_COUNT_H
+private:
+    std::map<char, int> nucleotide_counts_;
+};
+
+} // namespace nucleotide_count

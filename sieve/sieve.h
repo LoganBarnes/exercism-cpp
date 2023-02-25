@@ -1,8 +1,9 @@
-#if !defined(SIEVE_H)
-#define SIEVE_H
+#pragma once
+
+#include <vector>
 
 namespace sieve {
 
-}  // namespace sieve
+auto primes(int limit) -> std::vector<int>;
 
-#endif // SIEVE_H
+} // namespace sieve

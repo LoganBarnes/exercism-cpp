@@ -66,6 +66,7 @@ TEST_CASE("exhausting_digits_yields_different_names")
     for (int i = 0; i < 1000; ++i) {
         robot.reset();
         REQUIRE(names.count(robot.name()) == 0);
+        INFO(robot.name())
         REQUIRE(validate_name(robot.name()));
         names.insert(robot.name());
     }

@@ -1,6 +1,5 @@
 #pragma once
 
-#include <list>
 #include <string>
 
 namespace robot_name {
@@ -12,8 +11,7 @@ public:
     auto name() const -> std::string const&;
 
 private:
-    // std::list<std::string> potential_names_;
-    std::string            name_;
+    std::string name_;
 };
 
 } // namespace robot_name

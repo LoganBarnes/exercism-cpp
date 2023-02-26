@@ -1,33 +1,38 @@
 #include "robot_name.h"
 
 #include <algorithm>
-#include <iomanip>
+#include <cassert>
 #include <random>
-#include <sstream>
 #include <vector>
 
 namespace robot_name {
 namespace {
 
 auto all_potential_robot_names() {
-    // Always use the same generator to produce different
-    // results each time this function is called.
-    static auto rng = std::default_random_engine{};
+    constexpr auto total_name_count = 26UL * 26UL * 1'000UL;
 
-    auto names  = std::vector<std::string>{};
-    auto stream = std::stringstream{};
+    // Generate all possible names
 
-    for (auto i = 'A'; i <= 'Z'; ++i) {
-        for (auto j = 'A'; j <= 'Z'; ++j) {
-            for (auto k = 0; k <= 999; ++k) {
-                stream << i << j << std::setfill('0') << std::setw(3) << k;
-                names.emplace_back(stream.str());
-                stream.str(""); // clear stream
+    auto names = std::vector<std::string>{};
+    names.reserve(total_name_count);
+
+    // Convert string to robot name.
+    auto name = std::string{"00000"};
+    for (name[0] = 'A'; name[0] <= 'Z'; ++name[0]) {
+        for (name[1] = 'A'; name[1] <= 'Z'; ++name[1]) {
+            for (auto i = 0; i <= 999; ++i) {
+                std::snprintf(name.data() + 2, 4, "%.3i", i);
+                names.emplace_back(name);
             }
         }
     }
+    assert(names.size() == total_name_count);
 
-    // Randomize names
+    // Randomize the order of the names
+
+    // Always use the same generator to produce different
+    // results each time this function is called.
+    static auto rng = std::default_random_engine{};
     std::shuffle(std::begin(names), std::end(names), rng);
 
     return names;

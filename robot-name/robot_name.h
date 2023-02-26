@@ -1,8 +1,19 @@
-#if !defined(ROBOT_NAME_H)
-#define ROBOT_NAME_H
+#pragma once
+
+#include <list>
+#include <string>
 
 namespace robot_name {
 
-}  // namespace robot_name
+class robot {
+public:
+    explicit robot();
+    auto reset() -> void;
+    auto name() const -> std::string const&;
 
-#endif // ROBOT_NAME_H
+private:
+    // std::list<std::string> potential_names_;
+    std::string            name_;
+};
+
+} // namespace robot_name

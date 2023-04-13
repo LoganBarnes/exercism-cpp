@@ -57,4 +57,7 @@ add_subdirectory(nucleotide-count)
 add_subdirectory(rna-transcription)
 add_subdirectory(sieve)
 add_subdirectory(robot-name)
-add_subdirectory(say)
+add_subdirectory(allergies)
+add_subdirectory(protein-translation)
+#add_subdirectory(say)
+#add_subdirectory(gigasecond) # requires boost

@@ -1,6 +1,8 @@
 #include "allergies.h"
 
+#include <algorithm>
 #include <array>
+#include <iterator>
 
 namespace allergies {
 

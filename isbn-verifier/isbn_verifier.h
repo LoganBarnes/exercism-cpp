@@ -1,8 +1,9 @@
-#if !defined(ISBN_VERIFIER_H)
-#define ISBN_VERIFIER_H
+#pragma once
+
+#include <string>
 
 namespace isbn_verifier {
-    
-} // namespace isbn_verifier
 
-#endif // ISBN_VERIFIER_H
+auto is_valid(std::string const& isbn) -> bool;
+
+} // namespace isbn_verifier

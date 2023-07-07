@@ -1,5 +1,6 @@
 #include "beer_song.h"
 
+#include <array>
 #include <sstream>
 
 namespace beer_song

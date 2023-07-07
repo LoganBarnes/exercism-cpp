@@ -1,8 +1,10 @@
-#if !defined(SUM_OF_MULTIPLES_H)
-#define SUM_OF_MULTIPLES_H
+#pragma once
 
-namespace sum_of_multiples {
+#include <vector>
 
-}  // namespace sum_of_multiples
+namespace sum_of_multiples
+{
 
-#endif // SUM_OF_MULTIPLES_H
+auto to( std::vector< int > const& item_values, int level ) -> int;
+
+} // namespace sum_of_multiples

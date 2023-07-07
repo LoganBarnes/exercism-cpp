@@ -1,5 +1,25 @@
 #include "meetup.h"
 
+namespace greg = boost::gregorian;
+
+#define DEFINE_DAY_FUNCTION( prefix, day, suffix, weekday_func, day_number, day_name, date_modifier )                  \
+    auto scheduler::prefix##day##suffix( ) const->greg::date                                                           \
+    {                                                                                                                  \
+        return greg::weekday_func(                                                                                     \
+            greg::date{ year_, month_, day_number } date_modifier,                                                     \
+            greg::greg_weekday{ greg::day_name }                                                                       \
+        );                                                                                                             \
+    }
+
+#define DEFINE_DAY_FUNCTIONS( prefix, suffix, weekday_func, day_number, date_modifier )                                \
+    DEFINE_DAY_FUNCTION( prefix, mon, suffix, weekday_func, day_number, Monday, date_modifier )                        \
+    DEFINE_DAY_FUNCTION( prefix, tues, suffix, weekday_func, day_number, Tuesday, date_modifier )                      \
+    DEFINE_DAY_FUNCTION( prefix, wednes, suffix, weekday_func, day_number, Wednesday, date_modifier )                  \
+    DEFINE_DAY_FUNCTION( prefix, thurs, suffix, weekday_func, day_number, Thursday, date_modifier )                    \
+    DEFINE_DAY_FUNCTION( prefix, fri, suffix, weekday_func, day_number, Friday, date_modifier )                        \
+    DEFINE_DAY_FUNCTION( prefix, satur, suffix, weekday_func, day_number, Saturday, date_modifier )                    \
+    DEFINE_DAY_FUNCTION( prefix, sun, suffix, weekday_func, day_number, Sunday, date_modifier )
+
 namespace meetup
 {
 
@@ -9,340 +29,11 @@ scheduler::scheduler( greg::months_of_year const& month, unsigned short year )
 {
 }
 
-auto scheduler::monteenth( ) const -> greg::date
-{
-    return greg::next_weekday(
-        greg::date{ year_, month_, 13 },
-        greg::greg_weekday{ greg::Monday }
-    );
-}
-
-auto scheduler::tuesteenth( ) const -> greg::date
-{
-    return greg::next_weekday(
-        greg::date{ year_, month_, 13 },
-        greg::greg_weekday{ greg::Tuesday }
-    );
-}
-
-auto scheduler::wednesteenth( ) const -> greg::date
-{
-    return greg::next_weekday(
-        greg::date{ year_, month_, 13 },
-        greg::greg_weekday{ greg::Wednesday }
-    );
-}
-
-auto scheduler::thursteenth( ) const -> greg::date
-{
-    return greg::next_weekday(
-        greg::date{ year_, month_, 13 },
-        greg::greg_weekday{ greg::Thursday }
-    );
-}
-
-auto scheduler::friteenth( ) const -> greg::date
-{
-    return greg::next_weekday(
-        greg::date{ year_, month_, 13 },
-        greg::greg_weekday{ greg::Friday }
-    );
-}
-
-auto scheduler::saturteenth( ) const -> greg::date
-{
-    return greg::next_weekday(
-        greg::date{ year_, month_, 13 },
-        greg::greg_weekday{ greg::Saturday }
-    );
-}
-
-auto scheduler::sunteenth( ) const -> greg::date
-{
-    return greg::next_weekday(
-        greg::date{ year_, month_, 13 },
-        greg::greg_weekday{ greg::Sunday }
-    );
-}
-
-auto scheduler::first_monday( ) const -> greg::date
-{
-    return greg::next_weekday(
-        greg::date{ year_, month_, 1 },
-        greg::greg_weekday{ greg::Monday }
-    );
-}
-
-auto scheduler::first_tuesday( ) const -> greg::date
-{
-    return greg::next_weekday(
-        greg::date{ year_, month_, 1 },
-        greg::greg_weekday{ greg::Tuesday }
-    );
-}
-
-auto scheduler::first_wednesday( ) const -> greg::date
-{
-    return greg::next_weekday(
-        greg::date{ year_, month_, 1 },
-        greg::greg_weekday{ greg::Wednesday }
-    );
-}
-
-auto scheduler::first_thursday( ) const -> greg::date
-{
-    return greg::next_weekday(
-        greg::date{ year_, month_, 1 },
-        greg::greg_weekday{ greg::Thursday }
-    );
-}
-
-auto scheduler::first_friday( ) const -> greg::date
-{
-    return greg::next_weekday(
-        greg::date{ year_, month_, 1 },
-        greg::greg_weekday{ greg::Friday }
-    );
-}
-
-auto scheduler::first_saturday( ) const -> greg::date
-{
-    return greg::next_weekday(
-        greg::date{ year_, month_, 1 },
-        greg::greg_weekday{ greg::Saturday }
-    );
-}
-
-auto scheduler::first_sunday( ) const -> greg::date
-{
-    return greg::next_weekday(
-        greg::date{ year_, month_, 1 },
-        greg::greg_weekday{ greg::Sunday }
-    );
-}
-
-auto scheduler::second_monday( ) const -> greg::date
-{
-    return greg::next_weekday(
-        greg::date{ year_, month_, 8 },
-        greg::greg_weekday{ greg::Monday }
-    );
-}
-
-auto scheduler::second_tuesday( ) const -> greg::date
-{
-    return greg::next_weekday(
-        greg::date{ year_, month_, 8 },
-        greg::greg_weekday{ greg::Tuesday }
-    );
-}
-
-auto scheduler::second_wednesday( ) const -> greg::date
-{
-    return greg::next_weekday(
-        greg::date{ year_, month_, 8 },
-        greg::greg_weekday{ greg::Wednesday }
-    );
-}
-
-auto scheduler::second_thursday( ) const -> greg::date
-{
-    return greg::next_weekday(
-        greg::date{ year_, month_, 8 },
-        greg::greg_weekday{ greg::Thursday }
-    );
-}
-
-auto scheduler::second_friday( ) const -> greg::date
-{
-    return greg::next_weekday(
-        greg::date{ year_, month_, 8 },
-        greg::greg_weekday{ greg::Friday }
-    );
-}
-
-auto scheduler::second_saturday( ) const -> greg::date
-{
-    return greg::next_weekday(
-        greg::date{ year_, month_, 8 },
-        greg::greg_weekday{ greg::Saturday }
-    );
-}
-
-auto scheduler::second_sunday( ) const -> greg::date
-{
-    return greg::next_weekday(
-        greg::date{ year_, month_, 8 },
-        greg::greg_weekday{ greg::Sunday }
-    );
-}
-
-auto scheduler::third_monday( ) const -> greg::date
-{
-    return greg::next_weekday(
-        greg::date{ year_, month_, 15 },
-        greg::greg_weekday{ greg::Monday }
-    );
-}
-
-auto scheduler::third_tuesday( ) const -> greg::date
-{
-    return greg::next_weekday(
-        greg::date{ year_, month_, 15 },
-        greg::greg_weekday{ greg::Tuesday }
-    );
-}
-
-auto scheduler::third_wednesday( ) const -> greg::date
-{
-    return greg::next_weekday(
-        greg::date{ year_, month_, 15 },
-        greg::greg_weekday{ greg::Wednesday }
-    );
-}
-
-auto scheduler::third_thursday( ) const -> greg::date
-{
-    return greg::next_weekday(
-        greg::date{ year_, month_, 15 },
-        greg::greg_weekday{ greg::Thursday }
-    );
-}
-
-auto scheduler::third_friday( ) const -> greg::date
-{
-    return greg::next_weekday(
-        greg::date{ year_, month_, 15 },
-        greg::greg_weekday{ greg::Friday }
-    );
-}
-
-auto scheduler::third_saturday( ) const -> greg::date
-{
-    return greg::next_weekday(
-        greg::date{ year_, month_, 15 },
-        greg::greg_weekday{ greg::Saturday }
-    );
-}
-
-auto scheduler::third_sunday( ) const -> greg::date
-{
-    return greg::next_weekday(
-        greg::date{ year_, month_, 15 },
-        greg::greg_weekday{ greg::Sunday }
-    );
-}
-
-auto scheduler::fourth_monday( ) const -> greg::date
-{
-    return greg::next_weekday(
-        greg::date{ year_, month_, 22 },
-        greg::greg_weekday{ greg::Monday }
-    );
-}
-
-auto scheduler::fourth_tuesday( ) const -> greg::date
-{
-    return greg::next_weekday(
-        greg::date{ year_, month_, 22 },
-        greg::greg_weekday{ greg::Tuesday }
-    );
-}
-
-auto scheduler::fourth_wednesday( ) const -> greg::date
-{
-    return greg::next_weekday(
-        greg::date{ year_, month_, 22 },
-        greg::greg_weekday{ greg::Wednesday }
-    );
-}
-
-auto scheduler::fourth_thursday( ) const -> greg::date
-{
-    return greg::next_weekday(
-        greg::date{ year_, month_, 22 },
-        greg::greg_weekday{ greg::Thursday }
-    );
-}
-
-auto scheduler::fourth_friday( ) const -> greg::date
-{
-    return greg::next_weekday(
-        greg::date{ year_, month_, 22 },
-        greg::greg_weekday{ greg::Friday }
-    );
-}
-
-auto scheduler::fourth_saturday( ) const -> greg::date
-{
-    return greg::next_weekday(
-        greg::date{ year_, month_, 22 },
-        greg::greg_weekday{ greg::Saturday }
-    );
-}
-
-auto scheduler::fourth_sunday( ) const -> greg::date
-{
-    return greg::next_weekday(
-        greg::date{ year_, month_, 22 },
-        greg::greg_weekday{ greg::Sunday }
-    );
-}
-
-auto scheduler::last_monday( ) const -> greg::date
-{
-    return greg::previous_weekday(
-        greg::date{ year_, month_, 1 }.end_of_month( ),
-        greg::greg_weekday{ greg::Monday }
-    );
-}
-
-auto scheduler::last_tuesday( ) const -> greg::date
-{
-    return greg::previous_weekday(
-        greg::date{ year_, month_, 1 }.end_of_month( ),
-        greg::greg_weekday{ greg::Tuesday }
-    );
-}
-
-auto scheduler::last_wednesday( ) const -> greg::date
-{
-    return greg::previous_weekday(
-        greg::date{ year_, month_, 1 }.end_of_month( ),
-        greg::greg_weekday{ greg::Wednesday }
-    );
-}
-
-auto scheduler::last_thursday( ) const -> greg::date
-{
-    return greg::previous_weekday(
-        greg::date{ year_, month_, 1 }.end_of_month( ),
-        greg::greg_weekday{ greg::Thursday }
-    );
-}
-
-auto scheduler::last_friday( ) const -> greg::date
-{
-    return greg::previous_weekday(
-        greg::date{ year_, month_, 1 }.end_of_month( ),
-        greg::greg_weekday{ greg::Friday }
-    );
-}
-
-auto scheduler::last_saturday( ) const -> greg::date
-{
-    return greg::previous_weekday(
-        greg::date{ year_, month_, 1 }.end_of_month( ),
-        greg::greg_weekday{ greg::Saturday }
-    );
-}
-
-auto scheduler::last_sunday( ) const -> greg::date
-{
-    return greg::previous_weekday(
-        greg::date{ year_, month_, 1 }.end_of_month( ),
-        greg::greg_weekday{ greg::Sunday }
-    );
-}
+DEFINE_DAY_FUNCTIONS(, teenth, next_weekday, 13, )
+DEFINE_DAY_FUNCTIONS( first_, day, next_weekday, 1, )
+DEFINE_DAY_FUNCTIONS( second_, day, next_weekday, 8, )
+DEFINE_DAY_FUNCTIONS( third_, day, next_weekday, 15, )
+DEFINE_DAY_FUNCTIONS( fourth_, day, next_weekday, 22, )
+DEFINE_DAY_FUNCTIONS( last_, day, previous_weekday, 1, .end_of_month( ) )
 
 } // namespace meetup

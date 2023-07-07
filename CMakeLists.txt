@@ -61,5 +61,6 @@ add_subdirectory(allergies)
 add_subdirectory(protein-translation)
 add_subdirectory(secret-handshake)
 add_subdirectory(isbn-verifier)
-#add_subdirectory(say)
+add_subdirectory(say)
+add_subdirectory(log-levels)
 #add_subdirectory(gigasecond) # requires boost

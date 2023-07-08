@@ -4,6 +4,6 @@
 
 namespace luhn {
 
-auto valid(std::string const& s) -> bool;
+auto valid(std::string s) -> bool;
 
 } // namespace luhn

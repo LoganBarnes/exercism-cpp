@@ -1,8 +1,9 @@
-#if !defined(BOB_H)
-#define BOB_H
+#pragma once
+
+#include <string>
 
 namespace bob {
 
-}  // namespace bob
+auto hey(std::string msg) -> std::string;
 
-#endif // BOB_H
+}  // namespace bob

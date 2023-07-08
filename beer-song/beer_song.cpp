@@ -1,6 +1,5 @@
 #include "beer_song.h"
 
-#include <array>
 #include <sstream>
 
 namespace beer_song {
@@ -9,8 +8,8 @@ namespace {
 auto bottles(int bottles) -> std::string {
     switch (bottles) {
         case -1: return "No more bottles";
-        case 0:  return "no more bottles";
-        case 1:  return "1 bottle";
+        case 0: return "no more bottles";
+        case 1: return "1 bottle";
     }
     return std::to_string(bottles) + " bottles";
 }
@@ -26,12 +25,10 @@ auto action(int bottles) -> std::string {
 } // namespace
 
 auto verse(int n) -> std::string {
-    return (std::stringstream{} << bottles(n == 0 ? -1 : n)
-                                << " of beer on the wall, " << bottles(n)
-                                << " of beer.\n"
-                                << action(n) << ", " << bottles(n ? n - 1 : 99)
-                                << " of beer on the wall.\n")
-        .str();
+    auto stream = std::stringstream{};
+    stream << bottles(n == 0 ? -1 : n) << " of beer on the wall, " << bottles(n) << " of beer.\n"
+           << action(n) << ", " << bottles(n ? n - 1 : 99) << " of beer on the wall.\n";
+    return stream.str();
 }
 
 auto sing(int start, int end) -> std::string {

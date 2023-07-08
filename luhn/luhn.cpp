@@ -20,7 +20,7 @@ auto valid(std::string s) -> bool {
     // Convert and sum the digits.
     auto const process = [i = 0u](char c) mutable {
         auto const digit = static_cast<size_t>(c - '0');
-        return digit + (digit - (digit > 4) * 9u) * (i++ % 2);
+        return digit + (digit - (digit > 4) * 9u) * (i++ % 2); // Attempt at a one-liner.
     };
     return std::transform_reduce(s.rbegin(), s.rend(), 0, std::plus<>{}, process) % 10 == 0;
 }

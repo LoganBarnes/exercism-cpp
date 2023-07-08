@@ -6,8 +6,8 @@ auto to_decimal(std::string const& s) -> int {
     auto result = 0;
     auto base   = 1;
 
-    for (auto it = s.rbegin(); it != s.rend(); ++it) {
-        char c = *it;
+    for (auto riter = s.rbegin(); riter != s.rend(); ++riter) {
+        char c = *riter;
 
         if (c < '0' || '2' < c) { return 0; }
 

@@ -1,5 +1,7 @@
 #include "nucleotide_count.h"
 
+#include <stdexcept>
+
 namespace nucleotide_count {
 
 auto count(std::string const& dna) -> std::map<char, int> {

@@ -1,8 +1,10 @@
 #pragma once
+
 #include <algorithm>
 #include <cctype>
 #include <numeric>
 #include <string>
+#include <stdexcept>
 
 namespace largest_series_product {
 

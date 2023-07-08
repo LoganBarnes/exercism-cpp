@@ -3,6 +3,8 @@
 #include <algorithm>
 #include <map>
 
+#include <stdexcept>
+
 namespace rna_transcription {
 
 auto to_rna(char dna) -> char {

@@ -2,6 +2,8 @@
 
 #include <unordered_map>
 
+#include <stdexcept>
+
 namespace protein_translation {
 
 auto proteins(std::string const& rna) -> std::vector<std::string> {

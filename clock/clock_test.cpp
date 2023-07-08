@@ -170,12 +170,16 @@ vector<equalTest> equalCases = {
     },
 };
 
+namespace {
+
 string errorMsg(string expected, string actual, string test)
 {
     stringstream ret;
     ret << "[" << expected << " != " << actual << "] test case: " << test;
     return ret.str();
 }
+
+} // namespace
 
 TEST_CASE("time_tests")
 {

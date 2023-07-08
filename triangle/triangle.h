@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <array>
 #include <numeric>
+#include <stdexcept>
 
 namespace triangle {
 
@@ -23,7 +24,7 @@ inline auto kind(double a, double b, double c) -> flavor {
     }
 
     auto sides = std::array{b == c, c == a, a == b};
-    auto equal = [](auto b) { return b; };
+    auto equal = [](auto x) { return x; };
 
     if (std::all_of(sides.begin(), sides.end(), equal)) {
         return flavor::equilateral;

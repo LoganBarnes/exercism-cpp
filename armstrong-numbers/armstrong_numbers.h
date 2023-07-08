@@ -1,8 +1,7 @@
-#if !defined(ARMSTRONG_NUMBERS_H)
-#define ARMSTRONG_NUMBERS_H
+#pragma once
 
 namespace armstrong_numbers {
 
-}  // namespace armstrong_numbers
+auto is_armstrong_number(int n) -> bool;
 
-#endif // ARMSTRONG_NUMBERS_H
+}  // namespace armstrong_numbers

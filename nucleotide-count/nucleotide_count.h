@@ -5,14 +5,6 @@
 
 namespace nucleotide_count {
 
-class counter {
-public:
-    explicit counter(std::string const& dna);
-
-    auto nucleotide_counts() const -> std::map<char, int> const&;
-
-private:
-    std::map<char, int> nucleotide_counts_;
-};
+auto count(std::string const& dna) -> std::map<char, int>;
 
 } // namespace nucleotide_count

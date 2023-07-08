@@ -15,6 +15,7 @@ inline auto on_board(Pos const& p) {
 
 struct chess_board {
     chess_board(Pos white, Pos black) : w_(white), b_(black) {
+        if (w_ == b_)                       { throw domain_error("Same pos"); }
         if (!on_board(w_) || !on_board(b_)) { throw domain_error("Off board"); }
     }
 

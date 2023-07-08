@@ -50,6 +50,13 @@ TEST_CASE("newly_placed_queen_must_have_column_on_board")
     REQUIRE_THROWS_AS((queen_attack::chess_board{white, black}), std::domain_error);
 }
 
+TEST_CASE("queen_positions_must_be_distinct")
+{
+    const auto pos = std::make_pair(3, 7);
+
+    REQUIRE_THROWS_AS((queen_attack::chess_board{pos, pos}), std::domain_error);
+}
+
 TEST_CASE("queens_cannot_attack")
 {
     const queen_attack::chess_board board{std::make_pair(2, 4), std::make_pair(6, 6)};
@@ -99,7 +106,7 @@ TEST_CASE("queens_can_attack_on_fourth_diagonal")
     REQUIRE(board.can_attack());
 }
 
-TEST_CASE("blah")
+TEST_CASE("queens_cannot_attack_if_falling_diagonals_are_only_the_same_when_reflected_across_the_longest_falling_diagonal")
 {
     const queen_attack::chess_board board{std::make_pair(4, 1), std::make_pair(2, 5)};
 

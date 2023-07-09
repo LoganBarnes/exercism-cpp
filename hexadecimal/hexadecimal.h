@@ -1,8 +1,9 @@
-#if !defined(HEXADECIMAL_H)
-#define HEXADECIMAL_H
+#pragma once
+
+#include <string>
 
 namespace hexadecimal {
 
-}  // namespace hexadecimal
+int convert(std::string const& hex);
 
-#endif // HEXADECIMAL_H
+} // namespace hexadecimal

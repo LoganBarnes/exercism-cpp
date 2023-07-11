@@ -1,5 +1,7 @@
 #include "phone_number.h"
 
+#include <algorithm>
+
 namespace phone_number {
 
 phone_number::phone_number(std::string const& number) {

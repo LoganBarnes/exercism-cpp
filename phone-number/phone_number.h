@@ -1,8 +1,21 @@
-#if !defined(PHONE_NUMBER_H)
-#define PHONE_NUMBER_H
+#pragma once
+
+#include <string>
 
 namespace phone_number {
 
-}  // namespace phone_number
+class phone_number {
+public:
+    explicit phone_number(std::string const& number);
 
-#endif // PHONE_NUMBER_H
+    auto number() const -> std::string const&;
+    auto area_code() const -> std::string const&;
+
+    explicit operator std::string() const;
+
+private:
+    std::string local_number_;
+    std::string area_code_;
+};
+
+} // namespace phone_number

@@ -1,8 +1,9 @@
-#if !defined(SERIES_H)
-#define SERIES_H
+#pragma once
+
+#include <string>
 
 namespace series {
 
-}  // namespace series
+auto slice(std::string const& input, int length) -> std::vector<std::string>;
 
-#endif // SERIES_H
+} // namespace series

@@ -29,8 +29,8 @@ private:
         Element* next = nullptr;
     };
 
-    [[maybe_unused]] Element*    head_         = nullptr;
-    [[maybe_unused]] std::size_t current_size_ = 0;
+    Element*    head_         = nullptr;
+    std::size_t current_size_ = 0;
 };
 
 } // namespace simple_linked_list

@@ -1,5 +1,7 @@
 #include "series.h"
 
+#include <stdexcept>
+
 namespace series {
 
 auto slice(std::string const& input, int const length)

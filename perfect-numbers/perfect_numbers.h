@@ -1,6 +1,13 @@
-#if !defined(PERFECT_NUMBERS_H)
-#define PERFECT_NUMBERS_H
+#pragma once
 
-namespace perfect_numbers {}  // namespace perfect_numbers
+namespace perfect_numbers {
 
-#endif  // PERFECT_NUMBERS_H
+enum classification : int {
+    deficient = -1,
+    perfect   = 0,
+    abundant  = +1,
+};
+
+auto classify(int n) -> classification;
+
+} // namespace perfect_numbers

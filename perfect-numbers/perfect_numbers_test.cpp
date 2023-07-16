@@ -53,5 +53,8 @@ TEST_CASE("Zero is rejected (as it is not a positive integer)") {
 TEST_CASE("Negative numbers are rejected") {
     REQUIRE_THROWS_AS(perfect_numbers::classify(-1), std::domain_error);
 }
+TEST_CASE("64") {
+    REQUIRE(perfect_numbers::classify(64) == perfect_numbers::deficient);
+}
 
 #endif

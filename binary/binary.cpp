@@ -1,8 +1,5 @@
 #include "binary.h"
 
-#include <algorithm>
-#include <numeric>
-
 namespace binary {
 
 auto convert(std::string_view input) -> int {

@@ -5,7 +5,7 @@ namespace binary {
 auto convert(std::string_view input) -> int {
     auto result = 0;
 
-    for (auto const& c : input) {
+    for (auto c : input) {
         // Switches just seem cleaner to me.
         // Maybe I've been writing too much rust.
         switch (c) {

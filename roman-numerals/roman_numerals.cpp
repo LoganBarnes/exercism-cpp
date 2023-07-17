@@ -7,25 +7,25 @@
 namespace roman_numerals {
 namespace {
 
-constexpr auto roman_chars = std::array{'I', 'V', 'X', 'L', 'C', 'D', 'M', ' '};
+constexpr auto roman_chars = std::array{'I', 'V', 'X', 'L', 'C', 'D', 'M'};
 
-auto evaluate_digit(unsigned digit, char ones_char, char five_or_tens_char) {
+auto convert_digit(unsigned digit, char ones_char, char five_or_tens_char) {
     auto roman_number = std::string{};
 
     switch (digit) {
         case 3u:
-            roman_number += ones_char;
+            roman_number += ones_char; // fallthrough
         case 2u:
-            roman_number += ones_char;
+            roman_number += ones_char; // fallthrough
         case 1u:
             roman_number += ones_char;
             break;
 
         case 4u:
-            roman_number += ones_char;
-        case 5u:
-        case 6u:
-        case 7u:
+            roman_number += ones_char; // fallthrough
+        case 5u: // fallthrough
+        case 6u: // fallthrough
+        case 7u: // fallthrough
         case 8u:
             roman_number += five_or_tens_char;
             break;
@@ -45,36 +45,32 @@ auto convert(unsigned i) -> std::string {
     }
 
     auto digits = std::vector<unsigned>{};
-    digits.reserve(4u);
 
     for (; i > 0; i /= 10) {
         digits.emplace_back(i % 10u);
     }
 
-    auto roman_result = std::string{};
-    roman_result.reserve(12u); // Longest is MMMCCCXXXIII.
+    auto roman_number = std::string{};
 
-    auto index  = (digits.size() - 1u) * 2u;
-    auto offset = 1u;
+    auto* ones_iter          = roman_chars.data() + ((digits.size() - 1u) * 2u);
+    auto* fives_or_tens_iter = ones_iter + 1u;
 
     do {
         auto const digit = digits.back();
         digits.pop_back();
 
-        roman_result += evaluate_digit(
-            digit, roman_chars.at(index), roman_chars.at(index + offset)
-        );
+        roman_number += convert_digit(digit, *ones_iter, *fives_or_tens_iter);
 
         if (digit > 5) {
             digits.emplace_back(digit - 5);
-            offset = 2u;
+            fives_or_tens_iter = ones_iter + 2u;
         } else {
-            index -= 2u; // This will underflow as the loop exits.
-            offset = 1u;
+            ones_iter -= 2u;
+            fives_or_tens_iter = ones_iter + 1u;
         }
     } while (!digits.empty());
 
-    return roman_result;
+    return roman_number;
 }
 
 } // namespace roman_numerals

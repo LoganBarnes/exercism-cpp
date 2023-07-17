@@ -1,66 +1,78 @@
 #include "roman_numerals.h"
 
-#include <deque>
-#include <sstream>
+#include <array>
 #include <stdexcept>
+#include <vector>
 
 namespace roman_numerals {
+namespace {
+
+constexpr auto roman_chars = std::array{'I', 'V', 'X', 'L', 'C', 'D', 'M', ' '};
+
+auto evaluate_digit(unsigned digit, char ones_char, char five_or_tens_char) {
+    auto roman_number = std::string{};
+
+    switch (digit) {
+        case 3u:
+            roman_number += ones_char;
+        case 2u:
+            roman_number += ones_char;
+        case 1u:
+            roman_number += ones_char;
+            break;
+
+        case 4u:
+            roman_number += ones_char;
+        case 5u:
+        case 6u:
+        case 7u:
+        case 8u:
+            roman_number += five_or_tens_char;
+            break;
+
+        default:
+            break;
+    }
+
+    return roman_number;
+}
+
+} // namespace
 
 auto convert(unsigned i) -> std::string {
-    if (0 == i || i > 3'999u) {
+    if (0u == i || i > 3'999u) {
         throw std::domain_error{"i must be positive and less than 3,999"};
     }
 
     auto digits = std::vector<unsigned>{};
     digits.reserve(4u);
 
-    while (digits.size() < 4u) {
+    for (; i > 0; i /= 10) {
         digits.emplace_back(i % 10u);
-        i /= 10u;
     }
-    std::reverse(digits.begin(), digits.end());
-
-    //    constexpr auto roman_chars = std::array{"I", "V", "X", "L", "C", "D", "M"};
-    constexpr auto roman_chars = std::array{'M', 'D', 'C', 'L', 'X', 'V', 'I'};
 
     auto roman_result = std::string{};
+    roman_result.reserve(12u); // Longest is MMMCCCXXXIII.
 
+    auto index  = (digits.size() - 1u) * 2u;
     auto offset = 1u;
 
-    for (auto index = 0u, digit = digits[index]; index < digits.size();
-         /* no-op */) {
+    do {
+        auto const digit = digits.back();
+        digits.pop_back();
 
-        switch (digit) {
-            case 3:
-                roman_result += roman_chars.at(index * 2);
-            case 2:
-                roman_result += roman_chars.at(index * 2);
-            case 1:
-                roman_result += roman_chars.at(index * 2);
-                break;
-
-            case 4:
-                roman_result += roman_chars.at(index * 2);
-            case 5:
-            case 6:
-            case 7:
-            case 8:
-                roman_result += roman_chars.at(index * 2 - offset);
-                break;
-
-            default:
-                break;
-        }
+        roman_result += evaluate_digit(
+            digit, roman_chars.at(index), roman_chars.at(index + offset)
+        );
 
         if (digit > 5) {
-            digit -= 5;
-            offset = 2;
+            digits.emplace_back(digit - 5);
+            offset = 2u;
         } else {
-            ++index;
-            digit  = (index < digits.size() ? digits.at(index) : 0);
-            offset = 1;
+            index -= 2u; // This will underflow as the loop exits.
+            offset = 1u;
         }
-    }
+    } while (!digits.empty());
 
     return roman_result;
 }

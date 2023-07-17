@@ -4,6 +4,6 @@
 
 namespace roman_numerals {
 
-auto convert(int n) -> std::string;
+auto convert(unsigned n) -> std::string;
 
 } // namespace roman_numerals

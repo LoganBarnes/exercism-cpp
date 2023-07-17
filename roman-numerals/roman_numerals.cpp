@@ -1,43 +1,51 @@
 #include "roman_numerals.h"
 
+#include <deque>
 #include <sstream>
 #include <stdexcept>
 
 namespace roman_numerals {
 
-auto convert(int i) -> std::string {
-    if (0 >= i || i > 3'999) {
+auto convert(unsigned i) -> std::string {
+    if (0 == i || i > 3'999u) {
         throw std::domain_error{"i must be positive and less than 3,999"};
     }
 
-    constexpr auto chars = std::array{"I", "V", "X", "L", "C", "D", "M"};
+    auto digits = std::vector<unsigned>{};
+    digits.reserve(4u);
 
-    auto result = std::vector<std::string>{};
+    while (digits.size() < 4u) {
+        digits.emplace_back(i % 10u);
+        i /= 10u;
+    }
+    std::reverse(digits.begin(), digits.end());
+
+    //    constexpr auto roman_chars = std::array{"I", "V", "X", "L", "C", "D", "M"};
+    constexpr auto roman_chars = std::array{'M', 'D', 'C', 'L', 'X', 'V', 'I'};
+
+    auto roman_result = std::string{};
 
     auto offset = 1u;
 
-    auto digit = i % 10;
-    result.emplace_back();
-
-    while (i > 0) {
-        auto const index = (result.size() - 1u) * 2u;
+    for (auto index = 0u, digit = digits[index]; index < digits.size();
+         /* no-op */) {
 
         switch (digit) {
             case 3:
-                result.back() += chars.at(index);
+                roman_result += roman_chars.at(index * 2);
             case 2:
-                result.back() += chars.at(index);
+                roman_result += roman_chars.at(index * 2);
             case 1:
-                result.back() += chars.at(index);
+                roman_result += roman_chars.at(index * 2);
                 break;
 
             case 4:
-                result.back() += chars.at(index);
+                roman_result += roman_chars.at(index * 2);
             case 5:
             case 6:
             case 7:
             case 8:
-                result.back() += chars.at(index + offset);
+                roman_result += roman_chars.at(index * 2 - offset);
                 break;
 
             default:
@@ -48,20 +56,13 @@ auto convert(int i) -> std::string {
             digit -= 5;
             offset = 2;
         } else {
-            i /= 10;
-            digit  = i % 10;
+            ++index;
+            digit  = (index < digits.size() ? digits.at(index) : 0);
             offset = 1;
-            result.emplace_back();
         }
     }
 
-    std::stringstream res;
-    std::copy(
-        result.rbegin(),
-        result.rend(),
-        std::ostream_iterator<std::string>(res, "")
-    );
-    return res.str();
+    return roman_result;
 }
 
 } // namespace roman_numerals

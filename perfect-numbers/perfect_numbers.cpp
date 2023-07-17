@@ -11,11 +11,10 @@ auto aliquot_sum(int n) {
         throw std::domain_error{"n must be positive"};
     }
 
-    auto       sum    = std::min(n - 1, 1);
-    auto const sqrt_n = std::sqrt(n);
+    auto       sum    = 1;
+    auto const root = static_cast<int>(std::sqrt(n));
 
-    auto i = 2;
-    for (; i < sqrt_n; ++i) {
+    for (auto i = 2; i <= root; ++i) {
         // Since we already perform the % operation,
         // we might as well perform the / operation
         // for free (most machines can do both at once).
@@ -24,8 +23,8 @@ auto aliquot_sum(int n) {
         }
     }
 
-    // Add the final factor if n is a perfect square.
-    sum += (i == sqrt_n) * i;
+    // Remove the duplicate final factor if n is a perfect square.
+    sum -= (n == root * root) * root;
 
     return sum;
 }

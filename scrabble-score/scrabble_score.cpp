@@ -7,7 +7,9 @@ namespace scrabble_score {
 auto score(std::string_view word) -> int {
     auto total = 0;
     for (auto c : word) {
-        switch (std::toupper(c)) {
+        // Casting to unsigned char as per the recommendations here:
+        // https://en.cppreference.com/w/cpp/string/byte/toupper#Notes.
+        switch (std::toupper(static_cast<unsigned char>(c))) {
             case 'A':
             case 'E':
             case 'I':

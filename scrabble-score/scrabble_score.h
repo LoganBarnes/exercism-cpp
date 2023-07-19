@@ -1,8 +1,9 @@
-#if !defined(SCRABBLE_SCORE_H)
-#define SCRABBLE_SCORE_H
+#pragma once
+
+#include <string_view>
 
 namespace scrabble_score {
 
-}  // namespace scrabble_score
+auto score(std::string_view word) -> int;
 
-#endif // SCRABBLE_SCORE_H
+} // namespace scrabble_score

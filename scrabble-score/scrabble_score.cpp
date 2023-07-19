@@ -1,5 +1,7 @@
 #include "scrabble_score.h"
 
+#include <cctype>
+
 namespace scrabble_score {
 
 auto score(std::string_view word) -> int {

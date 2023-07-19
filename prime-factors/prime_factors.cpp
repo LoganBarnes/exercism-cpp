@@ -1,7 +1,5 @@
 #include "prime_factors.h"
 
-#include <cmath>
-
 namespace prime_factors {
 
 // Discovered a more optimal solution from voxEko. Thanks!
@@ -18,7 +16,7 @@ auto of(int number) -> std::vector<int> {
     check_and_append(2);
 
     // Check all odd primes up to sqrt(number):
-    for (int i = 3; static_cast<double>(i) <= std::sqrt(number); i += 2) {
+    for (int i = 3; i * i <= number; i += 2) {
         check_and_append(i);
     }
 

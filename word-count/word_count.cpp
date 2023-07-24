@@ -19,11 +19,9 @@ auto words(std::string const& phrase) -> std::map<std::string, int> {
 
     auto word = std::string{};
 
-    for (auto ch : phrase) {
-        auto c = to_lower(ch);
-
+    for (auto c : phrase) {
         if (is_word(c)) {
-            word += c;
+            word += to_lower(c);
         } else if (!word.empty()) {
             if (c == '\'') {
                 word += c;

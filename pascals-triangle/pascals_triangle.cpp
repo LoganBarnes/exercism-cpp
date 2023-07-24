@@ -8,13 +8,15 @@ auto generate_rows(unsigned n) -> std::vector<std::vector<int>> {
 
     for (auto i = 0u; i < n; ++i) {
         auto& row = result.emplace_back();
-        row.reserve(i + 1u);
+        row.reserve(i + 1);
 
-        row.emplace_back(1);
-        for (auto j = 1u; j < i; ++j) {
-            row.emplace_back(result[i - 1][j - 1] + result[i - 1][j + 0]);
+        for (auto j = 0u; j <= i; ++j) {
+            if (j == 0 || j == i) {
+                row.emplace_back(1);
+            } else {
+                row.emplace_back(result[i - 1][j - 1] + result[i - 1][j + 0]);
+            }
         }
-        row.emplace_back(1);
     }
 
     return result;

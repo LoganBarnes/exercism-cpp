@@ -33,7 +33,7 @@ circular_buffer<T>::circular_buffer(size_t size) : buffer_(size) {}
 template <typename T>
 auto circular_buffer<T>::read() -> T {
     if (empty()) {
-        throw std::domain_error("Buffer is empty");
+        throw std::domain_error("Cannot read: buffer is empty.");
     }
     auto&& result = std::move(buffer_[read_head_]);
     read_head_    = wrapped_index(read_head_ + 1);
@@ -44,7 +44,7 @@ auto circular_buffer<T>::read() -> T {
 template <typename T>
 auto circular_buffer<T>::write(T data) -> void {
     if (full()) {
-        throw std::domain_error("Buffer is full");
+        throw std::domain_error("Cannot write: buffer is full.");
     }
     overwrite(std::move(data));
 }
@@ -56,9 +56,9 @@ auto circular_buffer<T>::overwrite(T data) -> void {
     // 1 if not full, 0 otherwise
     auto const offset = std::min<size_t>(1ul, buffer_.size() - size_);
 
-    // increment read_head if full
+    // Increment read_head if buffer is full.
     read_head_ = wrapped_index(read_head_ + 1ul - offset);
-    // otherwise increment size
+    // Otherwise increment size.
     size_ += offset;
 }
 

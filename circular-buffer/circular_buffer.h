@@ -16,14 +16,15 @@ public:
     auto overwrite(T data) -> void;
     auto clear() -> void;
 
+    auto full() const -> bool;
+    auto empty() const -> bool;
+
 private:
     std::vector<T> buffer_;
     size_t         read_head_ = 0;
     size_t         size_      = 0;
 
     auto wrapped_index(size_t index) const -> size_t;
-    auto full() const -> bool;
-    auto empty() const -> bool;
 };
 
 template <typename T>
@@ -65,11 +66,6 @@ auto circular_buffer<T>::clear() -> void {
 }
 
 template <typename T>
-auto circular_buffer<T>::wrapped_index(size_t index) const -> size_t {
-    return index % buffer_.size();
-}
-
-template <typename T>
 auto circular_buffer<T>::full() const -> bool {
     return size_ == buffer_.size();
 }
@@ -77,6 +73,11 @@ auto circular_buffer<T>::full() const -> bool {
 template <typename T>
 auto circular_buffer<T>::empty() const -> bool {
     return size_ == 0;
+}
+
+template <typename T>
+auto circular_buffer<T>::wrapped_index(size_t index) const -> size_t {
+    return index % buffer_.size();
 }
 
 } // namespace circular_buffer

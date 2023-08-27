@@ -52,11 +52,14 @@ auto circular_buffer<T>::write(T data) -> void {
 template <typename T>
 auto circular_buffer<T>::overwrite(T data) -> void {
     buffer_[wrapped_index(read_head_ + size_)] = std::move(data);
-    if (full()) {
-        read_head_ = wrapped_index(read_head_ + 1);
-    } else {
-        ++size_;
-    }
+
+    // 1 if not full, 0 otherwise
+    auto const offset = std::min<size_t>(1ul, buffer_.size() - size_);
+
+    // increment read_head if full
+    read_head_ = wrapped_index(read_head_ + 1ul - offset);
+    // otherwise increment size
+    size_ += offset;
 }
 
 template <typename T>

@@ -94,4 +94,4 @@ add_subdirectory(anagram)
 add_subdirectory(isogram)
 add_subdirectory(troll-the-trolls)
 add_subdirectory(doctor-data)
-
+add_subdirectory(pop-count)

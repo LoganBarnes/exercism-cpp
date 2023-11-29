@@ -24,9 +24,9 @@ public:
         int              generation,
         star_map::System current_system = star_map::System::Sol
     );
-    Vessel replicate(std::string name) const;
-    void   make_buster();
-    bool   shoot_buster();
+    auto replicate(std::string name) const -> Vessel;
+    auto make_buster() -> void;
+    auto shoot_buster() -> bool;
 
     std::string      name;
     int              generation;
@@ -34,7 +34,7 @@ public:
     int              busters;
 };
 
-std::string get_older_bob(Vessel const& bob, Vessel const& marv);
-bool        in_the_same_system(Vessel const& marv, Vessel const& milo);
+auto get_older_bob(Vessel const& bob, Vessel const& marv) -> std::string;
+auto in_the_same_system(Vessel const& marv, Vessel const& milo) -> bool;
 
 } // namespace heaven

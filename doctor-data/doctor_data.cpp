@@ -10,15 +10,15 @@ Vessel::Vessel(
     , current_system(current_system)
     , busters(0) {}
 
-Vessel Vessel::replicate(std::string vessel_name) const {
+auto Vessel::replicate(std::string vessel_name) const -> Vessel{
     return Vessel(std::move(vessel_name), generation + 1, current_system);
 }
 
-void Vessel::make_buster() {
+auto Vessel::make_buster() -> void {
     busters++;
 }
 
-bool Vessel::shoot_buster() {
+auto Vessel::shoot_buster() -> bool {
     if (busters > 0) {
         busters--;
         return true;
@@ -26,14 +26,14 @@ bool Vessel::shoot_buster() {
     return false;
 }
 
-std::string get_older_bob(Vessel const& v1, Vessel const& v2) {
+auto get_older_bob(Vessel const& v1, Vessel const& v2) -> std::string {
     if (v1.generation < v2.generation) {
         return v1.name;
     }
     return v2.name;
 }
 
-bool in_the_same_system(Vessel const& marv, Vessel const& milo) {
+auto in_the_same_system(Vessel const& marv, Vessel const& milo) -> bool {
     return marv.current_system == milo.current_system;
 }
 

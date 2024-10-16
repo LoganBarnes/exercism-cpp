@@ -10,7 +10,11 @@ project(${exercise} CXX)
 # Locate Boost date_time library
 set(Boost_USE_MULTITHREADED ON)
 set(Boost_USE_STATIC_RUNTIME OFF)
-find_package(Boost 1.58 REQUIRED COMPONENTS date_time)
+find_package(Boost 1.58 COMPONENTS date_time)
+
+if (NOT ${Boost_FOUND})
+    return()
+endif()
 
 # Get a source filename from the exercise name by replacing -'s with _'s
 string(REPLACE "-" "_" file ${exercise})

@@ -14,8 +14,8 @@ public:
     auto open() -> void;
     auto close() -> void;
 
-    auto deposit(int deposit_amount) -> void;
-    auto withdraw(int withdraw_amount) -> void;
+    auto deposit(Currency deposit_amount) -> void;
+    auto withdraw(Currency withdraw_amount) -> void;
 
     [[nodiscard]] auto balance() const -> Currency;
 

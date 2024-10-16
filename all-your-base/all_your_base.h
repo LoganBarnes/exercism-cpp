@@ -15,7 +15,7 @@ inline auto convert(unsigned ib, digits const& ds, unsigned ob) -> digits {
         return d >= ib ? throw std::invalid_argument("High digit") : v * ib + d;
     });
 
-    auto output_digits = std::vector<unsigned>{};
+    auto output_digits = digits{};
     for (; val > 0U; val /= ob) { output_digits.emplace_back(val % ob); }
 
     return {output_digits.rbegin(), output_digits.rend()};

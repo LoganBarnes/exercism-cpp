@@ -30,22 +30,25 @@ auto preparationTime(Ingredients const& layers, int time_per_layer) -> int {
 }
 
 auto quantities(Ingredients const& layers) -> amount {
+    constexpr auto grams_per_noodle_layer = 50;
+    constexpr auto liters_per_sauce_layer = 0.2;
+
     return amount{
         // .noodles =
         static_cast<int>(std::count(layers.begin(), layers.end(), "noodles"))
-            * 50,
+            * grams_per_noodle_layer,
         // .sauce =
         static_cast<double>(std::count(layers.begin(), layers.end(), "sauce"))
-            * 0.2,
+            * liters_per_sauce_layer,
     };
 }
 
-auto addSecretIngredient(Ingredients myList, Ingredients const& friendsList)
+auto addSecretIngredient(Ingredients& myList, Ingredients const& friendsList)
     -> void {
     return addSecretIngredient(myList, friendsList.back());
 }
 
-auto addSecretIngredient(Ingredients myList, std::string const& ingredient)
+auto addSecretIngredient(Ingredients& myList, std::string const& ingredient)
     -> void {
     std::replace_if(myList.begin(), myList.end(), IsQuestionMark{}, ingredient);
 }

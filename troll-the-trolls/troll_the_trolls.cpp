@@ -31,9 +31,8 @@ enum class Action {
 // of `AccountStatus` and returns a `bool`. The first argument is the status of
 // the poster, the second one is the status of the viewer.
 auto display_post(AccountStatus poster_status, AccountStatus viewer_status) {
-    return poster_status == AccountStatus::troll
-             ? viewer_status == AccountStatus::troll
-             : viewer_status != AccountStatus::troll;
+    return poster_status != AccountStatus::troll
+        || viewer_status == AccountStatus::troll;
 }
 
 // TODO: Task 3 - Implement the `permission_check` function, that takes an

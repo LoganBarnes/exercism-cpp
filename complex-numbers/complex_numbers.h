@@ -4,23 +4,25 @@ namespace complex_numbers {
 
 class Complex {
 public:
+    Complex(double real);
     Complex(double real, double imag);
 
-    auto real() const -> double;
-    auto imag() const -> double;
+    [[nodiscard]] auto real() const -> double;
+    [[nodiscard]] auto imag() const -> double;
 
-    auto abs() const -> double;
-    auto conj() const -> Complex;
-    auto exp() const -> Complex;
+    [[nodiscard]] auto abs() const -> double;
+    [[nodiscard]] auto conj() const -> Complex;
+    [[nodiscard]] auto exp() const -> Complex;
 
 private:
     double real_;
     double imag_;
-};
 
-auto operator+(Complex const& lhs, Complex const& rhs) -> Complex;
-auto operator-(Complex const& lhs, Complex const& rhs) -> Complex;
-auto operator*(Complex const& lhs, Complex const& rhs) -> Complex;
-auto operator/(Complex const& lhs, Complex const& rhs) -> Complex;
+    // https://rules.sonarsource.com/cpp/RSPEC-2807/
+    friend auto operator+(Complex const& lhs, Complex const& rhs) -> Complex;
+    friend auto operator-(Complex const& lhs, Complex const& rhs) -> Complex;
+    friend auto operator*(Complex const& lhs, Complex const& rhs) -> Complex;
+    friend auto operator/(Complex const& lhs, Complex const& rhs) -> Complex;
+};
 
 } // namespace complex_numbers

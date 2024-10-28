@@ -4,6 +4,8 @@
 
 namespace complex_numbers {
 
+Complex::Complex(double real) : real_(real), imag_(0.0) {}
+
 Complex::Complex(double real, double imag) : real_(real), imag_(imag) {}
 
 auto Complex::real() const -> double {

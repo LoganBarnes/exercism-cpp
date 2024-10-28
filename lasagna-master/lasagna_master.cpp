@@ -7,6 +7,9 @@
 namespace lasagna_master {
 namespace {
 
+constexpr auto grams_per_noodle_layer = 50;
+constexpr auto liters_per_sauce_layer = 0.2;
+
 struct IsQuestionMark {
     auto operator()(std::string_view ingredient) const {
         return ingredient == "?";
@@ -30,10 +33,7 @@ auto preparationTime(Ingredients const& layers, int time_per_layer) -> int {
 }
 
 auto quantities(Ingredients const& layers) -> amount {
-    constexpr auto grams_per_noodle_layer = 50;
-    constexpr auto liters_per_sauce_layer = 0.2;
-
-    return amount{
+    return {
         // .noodles =
         static_cast<int>(std::count(layers.begin(), layers.end(), "noodles"))
             * grams_per_noodle_layer,

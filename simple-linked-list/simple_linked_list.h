@@ -1,36 +1,68 @@
 #pragma once
 
-#include <cstddef>
+#include <algorithm>
+#include <memory>
 
 namespace simple_linked_list {
 
+template <typename T = int>
 class List {
 public:
-    List() = default;
-    ~List();
-
-    // Moving and copying is not needed to solve the exercise.
-    // If you want to change these, make sure to correctly
-    // free / move / copy the allocated resources.
-    List(List const&)            = delete;
-    List& operator=(List const&) = delete;
-    List(List&&)                 = delete;
-    List& operator=(List&&)      = delete;
-
-    std::size_t size() const;
-    void        push(int entry);
-    int         pop();
-    void        reverse();
+    [[nodiscard]]
+    auto size() const -> std::size_t;
+    auto push(T entry) -> void;
+    auto pop() -> T;
+    auto reverse() -> void;
 
 private:
     struct Element {
-        explicit Element(int data_in) : data{data_in} {};
-        int      data = 0;
-        Element* next = nullptr;
+        explicit Element(T element_data);
+        T                        data;
+        std::unique_ptr<Element> next = nullptr;
     };
 
-    Element*    head_         = nullptr;
-    std::size_t current_size_ = 0;
+    std::unique_ptr<Element> head_ = nullptr;
+    std::size_t              size_ = 0UL;
 };
+
+template <typename T>
+List<T>::Element::Element(T element_data) : data{std::move(element_data)} {}
+
+template <typename T>
+auto List<T>::size() const -> std::size_t {
+    return size_;
+}
+
+template <typename T>
+auto List<T>::push(T entry) -> void {
+    auto node  = std::make_unique<Element>(std::move(entry));
+    node->next = std::move(head_);
+    head_      = std::move(node);
+    ++size_;
+}
+
+template <typename T>
+auto List<T>::pop() -> T {
+    auto const entry = std::move(head_->data);
+
+    auto const head = std::move(head_);
+    head_           = std::move(head->next);
+    --size_;
+
+    return entry;
+}
+
+template <typename T>
+auto List<T>::reverse() -> void {
+    auto           curr = std::move(head_);
+    decltype(curr) prev = nullptr;
+
+    while (curr) {
+        std::swap(curr->next, prev);
+        std::swap(prev, curr);
+    }
+
+    head_ = std::move(prev);
+}
 
 } // namespace simple_linked_list

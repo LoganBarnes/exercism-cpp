@@ -1,5 +1,7 @@
 # Say
 
+Revisit this: https://exercism.org/tracks/cpp/exercises/say/solutions/LoganBarnes
+
 Welcome to Say on Exercism's C++ Track.
 If you need help running the tests or submitting your code, check out `HELP.md`.
 

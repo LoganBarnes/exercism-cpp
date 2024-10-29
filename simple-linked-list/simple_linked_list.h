@@ -24,7 +24,7 @@ public:
 
 private:
     struct Element {
-        explicit Element(int data) : data{data} {};
+        explicit Element(int data_in) : data{data_in} {};
         int      data = 0;
         Element* next = nullptr;
     };

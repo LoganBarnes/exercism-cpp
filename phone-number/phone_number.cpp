@@ -1,6 +1,7 @@
 #include "phone_number.h"
 
 #include <algorithm>
+#include <stdexcept>
 
 namespace phone_number {
 

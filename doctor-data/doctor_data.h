@@ -20,9 +20,9 @@ namespace heaven {
 class Vessel {
 public:
     explicit Vessel(
-        std::string      name,
-        int              generation,
-        star_map::System current_system = star_map::System::Sol
+        std::string      vessel_name,
+        int              vessel_generation,
+        star_map::System vessel_current_system = star_map::System::Sol
     );
     auto replicate(std::string name) const -> Vessel;
     auto make_buster() -> void;

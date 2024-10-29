@@ -8,10 +8,11 @@ namespace arcade {
 
 class HighScores {
 private:
-    std::vector<int> scores;
+    std::vector<int> scores_;
 
 public:
-    explicit HighScores(std::vector<int> scores) : scores(std::move(scores)){};
+    explicit HighScores(std::vector<int> scores)
+        : scores_(std::move(scores)) {};
 
     std::vector<int> list_scores();
 

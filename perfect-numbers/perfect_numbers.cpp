@@ -1,7 +1,7 @@
 #include "perfect_numbers.h"
 
-#include <algorithm>
 #include <cmath>
+#include <stdexcept>
 
 namespace perfect_numbers {
 namespace {
@@ -11,7 +11,7 @@ auto aliquot_sum(int n) {
         throw std::domain_error{"n must be positive"};
     }
 
-    auto       sum    = 1;
+    auto       sum  = 1;
     auto const root = static_cast<int>(std::sqrt(n));
 
     for (auto i = 2; i <= root; ++i) {

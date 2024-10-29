@@ -8,8 +8,6 @@ constexpr auto to_underlying(Enum e) { // defined in C++23
     return static_cast<std::underlying_type_t<Enum>>(e);
 }
 
-} // namespace
-
 // TODO: Task 1 - Define an `AccountStatus` enumeration to represent the four
 // account types: `troll`, `guest`, `user`, and `mod`.
 enum class AccountStatus {
@@ -74,4 +72,5 @@ auto has_priority(AccountStatus player1, AccountStatus player2) {
     return to_underlying(player1) > to_underlying(player2);
 }
 
+} // namespace
 } // namespace hellmath

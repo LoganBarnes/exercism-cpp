@@ -1,5 +1,6 @@
 #include "roman_numerals.h"
 
+#include <algorithm>
 #include <array>
 #include <stdexcept>
 

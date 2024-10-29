@@ -3,14 +3,16 @@
 namespace heaven {
 
 Vessel::Vessel(
-    std::string vessel_name, int generation, star_map::System current_system
+    std::string      vessel_name,
+    int              vessel_generation,
+    star_map::System vessel_current_system
 )
     : name(std::move(vessel_name))
-    , generation(generation)
-    , current_system(current_system)
+    , generation(vessel_generation)
+    , current_system(vessel_current_system)
     , busters(0) {}
 
-auto Vessel::replicate(std::string vessel_name) const -> Vessel{
+auto Vessel::replicate(std::string vessel_name) const -> Vessel {
     return Vessel(std::move(vessel_name), generation + 1, current_system);
 }
 

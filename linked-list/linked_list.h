@@ -16,18 +16,18 @@ public:
     /// \brief Adds an element to the end of the list,
     auto push(T data) -> void { insert_between(data, dummy_->prev_node, dummy_); }
 
+    /// \brief Adds an element to the start of the list.
+    auto unshift(T data) -> void { insert_between(data, dummy_, dummy_->next_node); }
+
     /// \brief Removes and returns the last element of the list.
     /// \throws std::domain_error if the list is empty.
     auto pop() -> T { return remove(dummy_->prev_node); }
 
-    /// \brief Adds an element to the start of the list.
+    /// \brief Removes and returns the first element of the list.
+    /// \throws std::domain_error if the list is empty.
     auto shift() -> T { return remove(dummy_->next_node); }
 
     /// \brief Returns the total number of elements in the current list.
-    auto unshift(T data) -> void { insert_between(data, dummy_, dummy_->next_node); }
-
-    /// \brief Removes the first occurrence of the given value from the list.
-    /// \returns true if the value was found and removed, false otherwise.
     [[nodiscard]] auto count() const -> std::size_t { return size_; }
 
     /// \brief Removes the first occurrence of the given value from the list.

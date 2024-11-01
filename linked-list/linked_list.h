@@ -1,16 +1,16 @@
 #pragma once
 
-#include <cstddef>
 #include <memory>
 #include <stdexcept>
-#include <string>
 
 namespace linked_list {
 
 template <typename T>
 class List {
 public:
-    /// \brief Adds an element to the end of the list,
+    explicit List();
+
+    /// \brief Adds an element to the end of the list.
     auto push(T element) -> void;
 
     /// \brief Removes and returns the last element of the list.
@@ -36,84 +36,50 @@ private:
     struct Node {
         explicit Node(T node_data) : data{node_data} {};
         T                     data;
-        std::unique_ptr<Node> next = nullptr;
-        Node*                 prev = nullptr;
+        std::shared_ptr<Node> next = nullptr;
+        std::shared_ptr<Node> prev = nullptr;
     };
 
-    std::unique_ptr<Node> head_ = nullptr;
-    Node*                 tail_ = nullptr;
-    size_t                size_ = 0UL;
+    // Dummy nodes to simplify the implementation.
+    // T is assumed to be a simple type that can be default-constructed.
+    // Otherwise, the implementation should be smarter about moves and copies.
+    std::shared_ptr<Node> dummy_head_ = std::make_shared<Node>(T{});
+    std::shared_ptr<Node> dummy_tail_ = std::make_shared<Node>(T{});
+    size_t                size_       = 0UL;
+
+    /// \brief Inserts a new node between two existing nodes.
+    auto insert_between(
+        T node_data, std::shared_ptr<Node> prev, std::shared_ptr<Node> next
+    ) -> void;
+
+    /// \brief Removes a node from the list and returns its data.
+    auto remove(std::shared_ptr<Node> node) -> T;
 };
 
 template <typename T>
+List<T>::List() {
+    dummy_head_->next = dummy_tail_;
+    dummy_tail_->prev = dummy_head_;
+}
+
+template <typename T>
 auto List<T>::push(T element) -> void {
-    if (nullptr == head_) {
-        head_ = std::make_unique<Node>(std::move(element));
-        tail_ = head_.get();
-
-    } else {
-        tail_->next       = std::make_unique<Node>(std::move(element));
-        tail_->next->prev = tail_;
-        tail_             = tail_->next.get();
-    }
-
-    ++size_;
+    insert_between(element, dummy_tail_->prev, dummy_tail_);
 }
 
 template <typename T>
 auto List<T>::pop() -> T {
-    if (0UL == size_) {
-        throw std::domain_error{"Cannot pop from an empty list"};
-    }
-
-    auto data = std::move(tail_->data);
-
-    tail_ = tail_->prev;
-
-    if (nullptr == tail_) {
-        head_ = nullptr;
-    } else {
-        tail_->next = nullptr;
-    }
-
-    --size_;
-    return data;
+    return remove(dummy_tail_->prev);
 }
 
 template <typename T>
 auto List<T>::shift() -> T {
-    if (0UL == size_) {
-        throw std::domain_error{"Cannot shift from an empty list"};
-    }
-
-    auto data = std::move(head_->data);
-
-    head_ = std::move(head_->next);
-
-    if (nullptr == head_) {
-        tail_ = nullptr;
-    } else {
-        head_->prev = nullptr;
-    }
-
-    --size_;
-    return data;
+    return remove(dummy_head_->next);
 }
 
 template <typename T>
 auto List<T>::unshift(T element) -> void {
-    if (nullptr == head_) {
-        head_ = std::make_unique<Node>(std::move(element));
-        tail_ = head_.get();
-
-    } else {
-        auto new_head  = std::make_unique<Node>(std::move(element));
-        head_->prev    = new_head.get();
-        new_head->next = std::move(head_);
-        head_          = std::move(new_head);
-    }
-
-    ++size_;
+    insert_between(element, dummy_head_, dummy_head_->next);
 }
 
 template <typename T>
@@ -123,31 +89,45 @@ auto List<T>::count() const -> std::size_t {
 
 template <typename T>
 auto List<T>::erase(T const& value) -> bool {
-
-    auto* node = head_.get();
+    auto node = dummy_head_->next;
 
     for (auto i = 0UL; i < size_; ++i) {
         if (node->data == value) {
-            if (node->next) {
-                node->next->prev = node->prev;
-            } else {
-                tail_ = node->prev;
-            }
-
-            if (node->prev) {
-                node->prev->next = std::move(node->next);
-            } else {
-                head_ = std::move(node->next);
-            }
-
-            --size_;
+            remove(node);
             return true;
         }
 
-        node = node->next.get();
+        node = node->next;
+    }
+    return false;
+}
+
+template <typename T>
+auto List<T>::insert_between(
+    T node_data, std::shared_ptr<Node> prev, std::shared_ptr<Node> next
+) -> void {
+
+    auto new_node  = std::make_shared<Node>(node_data);
+    new_node->prev = prev;
+    new_node->next = next;
+
+    prev->next = new_node;
+    next->prev = new_node;
+
+    ++size_;
+}
+
+template <typename T>
+auto List<T>::remove(std::shared_ptr<Node> const node) -> T {
+    if (0UL == size_) {
+        throw std::domain_error{"Cannot remove from an empty list"};
     }
 
-    return false;
+    node->prev->next = node->next;
+    node->next->prev = node->prev;
+
+    --size_;
+    return node->data;
 }
 
 } // namespace linked_list

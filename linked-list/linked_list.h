@@ -42,8 +42,6 @@ private:
     };
 
     // Dummy nodes to simplify the implementation.
-    // T is assumed to be a simple type that can be default-constructed.
-    // Otherwise, the implementation should be smarter about moves and copies.
     std::shared_ptr<Node> dummy_head_ = std::make_shared<Node>();
     std::shared_ptr<Node> dummy_tail_ = std::make_shared<Node>();
     size_t                size_       = 0UL;

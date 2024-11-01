@@ -6,27 +6,25 @@
 namespace linked_list {
 
 // An attempt to implement the doubly linked list using the fewest
-// lines of code without making it terribly unreadable.
+// lines of code without making it terribly unreadable
+// (and without using an existing std implementation).
 template <typename T>
 class List {
 public:
-    explicit List() {
-        dummy_head_->next = dummy_tail_;
-        dummy_tail_->prev = dummy_head_;
-    }
+    explicit List() { dummy_->prev_node = dummy_->next_node = dummy_; }
 
     /// \brief Adds an element to the end of the list,
-    auto push(T data) -> void { insert_between(data, dummy_tail_->prev, dummy_tail_); }
+    auto push(T data) -> void { insert_between(data, dummy_->prev_node, dummy_); }
 
     /// \brief Removes and returns the last element of the list.
     /// \throws std::domain_error if the list is empty.
-    auto pop() -> T { return remove(dummy_tail_->prev); }
+    auto pop() -> T { return remove(dummy_->prev_node); }
 
     /// \brief Adds an element to the start of the list.
-    auto shift() -> T { return remove(dummy_head_->next); }
+    auto shift() -> T { return remove(dummy_->next_node); }
 
     /// \brief Returns the total number of elements in the current list.
-    auto unshift(T data) -> void { insert_between(data, dummy_head_, dummy_head_->next); }
+    auto unshift(T data) -> void { insert_between(data, dummy_, dummy_->next_node); }
 
     /// \brief Removes the first occurrence of the given value from the list.
     /// \returns true if the value was found and removed, false otherwise.
@@ -35,7 +33,7 @@ public:
     /// \brief Removes the first occurrence of the given value from the list.
     /// \returns true if the value was found and removed, false otherwise.
     auto erase(T const& value) -> bool {
-        for (auto node = dummy_head_->next; node != dummy_tail_; node = node->next) {
+        for (auto node = dummy_->next_node; node != dummy_; node = node->next_node) {
             if (node->data == value) {
                 remove(node);
                 return true;
@@ -45,40 +43,38 @@ public:
     }
 
 private:
+    /// \brief The core node structure for the doubly linked list with
+    ///        references to the previous and next nodes.
     struct Node {
-        explicit Node(T node_data) : data(node_data) {}
+        explicit Node(T node_data, std::shared_ptr<Node> prev, std::shared_ptr<Node> next)
+            : data(node_data), prev_node(std::move(prev)), next_node(std::move(next)) {}
 
         T                     data;
-        std::shared_ptr<Node> next = nullptr;
-        std::shared_ptr<Node> prev = nullptr;
+        std::shared_ptr<Node> prev_node;
+        std::shared_ptr<Node> next_node;
     };
 
-    // Dummy nodes to simplify the implementation.
+    // Dummy node to simplify the implementation.
     // T is assumed to be a simple type that can be default-constructed.
-    std::shared_ptr<Node> dummy_head_ = std::make_shared<Node>(T{});
-    std::shared_ptr<Node> dummy_tail_ = std::make_shared<Node>(T{});
-    size_t                size_       = 0UL;
+    std::shared_ptr<Node> dummy_ = std::make_shared<Node>(T{}, nullptr, nullptr);
+    size_t                size_  = 0UL;
 
     /// \brief Inserts a new node between two existing nodes.
     auto insert_between(T data, std::shared_ptr<Node> prev, std::shared_ptr<Node> next) -> void {
-        auto new_node  = std::make_shared<Node>(data);
-        new_node->prev = prev;
-        new_node->next = next;
-
-        prev->next = new_node;
-        next->prev = new_node;
-
+        auto new_node   = std::make_shared<Node>(data, prev, next);
+        prev->next_node = new_node;
+        next->prev_node = new_node;
         ++size_;
     }
 
     /// \brief Removes a node from the list and returns its data.
+    /// \throws std::domain_error if the list is empty.
     auto remove(std::shared_ptr<Node> node) -> T {
-        if (0UL == size_) { throw std::domain_error{"Cannot remove from an empty list"}; }
+        size_ = (size_ > 0UL) ? size_ - 1UL : throw std::domain_error{"List empty"};
 
-        node->prev->next = node->next;
-        node->next->prev = node->prev;
+        node->prev_node->next_node = node->next_node;
+        node->next_node->prev_node = node->prev_node;
 
-        --size_;
         return node->data;
     }
 };

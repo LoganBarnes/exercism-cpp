@@ -11,7 +11,8 @@ public:
     explicit List();
 
     /// \brief Adds an element to the end of the list.
-    auto push(T element) -> void;
+    template <typename... Args>
+    auto push(Args&&... args) -> void;
 
     /// \brief Removes and returns the last element of the list.
     /// \throws std::domain_error if the list is empty.
@@ -22,7 +23,8 @@ public:
     auto shift() -> T;
 
     /// \brief Adds an element to the start of the list.
-    auto unshift(T element) -> void;
+    template <typename... Args>
+    auto unshift(Args&&... args) -> void;
 
     /// \brief Returns the total number of elements in the current list.
     [[nodiscard]]
@@ -34,8 +36,7 @@ public:
 
 private:
     struct Node {
-        explicit Node(T node_data) : data{node_data} {};
-        T                     data;
+        std::unique_ptr<T>    data = nullptr;
         std::shared_ptr<Node> next = nullptr;
         std::shared_ptr<Node> prev = nullptr;
     };
@@ -43,13 +44,14 @@ private:
     // Dummy nodes to simplify the implementation.
     // T is assumed to be a simple type that can be default-constructed.
     // Otherwise, the implementation should be smarter about moves and copies.
-    std::shared_ptr<Node> dummy_head_ = std::make_shared<Node>(T{});
-    std::shared_ptr<Node> dummy_tail_ = std::make_shared<Node>(T{});
+    std::shared_ptr<Node> dummy_head_ = std::make_shared<Node>();
+    std::shared_ptr<Node> dummy_tail_ = std::make_shared<Node>();
     size_t                size_       = 0UL;
 
     /// \brief Inserts a new node between two existing nodes.
+    template <typename... Args>
     auto insert_between(
-        T node_data, std::shared_ptr<Node> prev, std::shared_ptr<Node> next
+        std::shared_ptr<Node> prev, std::shared_ptr<Node> next, Args&&... args
     ) -> void;
 
     /// \brief Removes a node from the list and returns its data.
@@ -63,8 +65,9 @@ List<T>::List() {
 }
 
 template <typename T>
-auto List<T>::push(T element) -> void {
-    insert_between(element, dummy_tail_->prev, dummy_tail_);
+template <typename... Args>
+auto List<T>::push(Args&&... args) -> void {
+    insert_between(dummy_tail_->prev, dummy_tail_, std::forward<Args>(args)...);
 }
 
 template <typename T>
@@ -78,8 +81,9 @@ auto List<T>::shift() -> T {
 }
 
 template <typename T>
-auto List<T>::unshift(T element) -> void {
-    insert_between(element, dummy_head_, dummy_head_->next);
+template <typename... Args>
+auto List<T>::unshift(Args&&... args) -> void {
+    insert_between(dummy_head_, dummy_head_->next, std::forward<Args>(args)...);
 }
 
 template <typename T>
@@ -92,7 +96,7 @@ auto List<T>::erase(T const& value) -> bool {
     auto node = dummy_head_->next;
 
     for (auto i = 0UL; i < size_; ++i) {
-        if (node->data == value) {
+        if (*(node->data) == value) {
             remove(node);
             return true;
         }
@@ -103,11 +107,13 @@ auto List<T>::erase(T const& value) -> bool {
 }
 
 template <typename T>
+template <typename... Args>
 auto List<T>::insert_between(
-    T node_data, std::shared_ptr<Node> prev, std::shared_ptr<Node> next
+    std::shared_ptr<Node> prev, std::shared_ptr<Node> next, Args&&... args
 ) -> void {
 
-    auto new_node  = std::make_shared<Node>(node_data);
+    auto new_node  = std::make_shared<Node>();
+    new_node->data = std::make_unique<T>(std::forward<Args>(args)...);
     new_node->prev = prev;
     new_node->next = next;
 
@@ -127,7 +133,7 @@ auto List<T>::remove(std::shared_ptr<Node> const node) -> T {
     node->next->prev = node->prev;
 
     --size_;
-    return node->data;
+    return *(node->data);
 }
 
 } // namespace linked_list

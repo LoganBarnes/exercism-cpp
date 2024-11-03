@@ -3,15 +3,19 @@
 #include <stdexcept>
 
 namespace diamond {
+namespace {
 
 template <typename Container>
-auto mirror(Container value) {
-    value.insert(value.end(), std::next(value.rbegin()), value.rend());
-    return value;
-}
+auto mirror(Container const& value) {
+    auto copy = value;
+    copy.insert(copy.end(), std::next(value.rbegin()), value.rend());
+    return copy;
+};
+
+} // namespace
 
 auto rows(char const c) -> std::vector<std::string> {
-    if (c < 'A' || 'Z' < c) {
+    if ((c < 'A') || ('Z' < c)) {
         throw std::domain_error("Invalid input");
     }
 

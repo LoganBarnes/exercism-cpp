@@ -1,19 +1,27 @@
 #include "diamond.h"
 
+#include <format>
+#include <numeric>
+#include <ranges>
+
 namespace diamond {
 
+auto mirror(auto value) {
+    value.insert(value.end(), value.rbegin() + 1, value.rend());
+    return value;
+}
+
 auto rows(char const c) -> std::vector<std::string> {
-    auto const n   = static_cast<size_t>(c - 'A');
-    auto const dim = 2UL * n + 1UL;
+    auto const n = static_cast<size_t>(c - 'A');
 
-    auto result = std::vector<std::string>{n + 1UL, std::string(dim, ' ')};
+    auto const result
+        = std::views::iota(0UL, n + 1UL)
+        | std::views::transform([n](auto const i) {
+              return mirror(std::format("{:>{}c}{}", 'A' + i, n - i + 1UL, std::string(i, ' ')));
+          })
+        | std::ranges::to<std::vector>();
 
-    for (auto i = 0UL; i <= n; i++) {
-        result[i][n - i] = result[i][n + i] = static_cast<char>('A' + i);
-    }
-    result.insert(result.end(), result.rbegin() + 1, result.rend());
-
-    return result;
+    return mirror(result);
 }
 
 } // namespace diamond

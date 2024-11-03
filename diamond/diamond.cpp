@@ -1,27 +1,30 @@
 #include "diamond.h"
 
-#include <format>
-#include <numeric>
-#include <ranges>
-
-// C++26 ranges version
+#include <stdexcept>
 
 namespace diamond {
 
-using namespace std;
-
-auto mirror(auto v) {
-    return views::concat(v, v | views::reverse | views::drop(1)) | ranges::to<decltype(v)>();
+template <typename Container>
+auto mirror(Container value) {
+    value.insert(value.end(), std::next(value.rbegin()), value.rend());
+    return value;
 }
 
-auto rows(char const c) -> vector<string> {
+auto rows(char const c) -> std::vector<std::string> {
+    if (c < 'A' || 'Z' < c) {
+        throw std::domain_error("Invalid input");
+    }
+
     auto const n = static_cast<size_t>(c - 'A') + 1UL;
 
-    auto const to_row = [n](auto const row) {
-        return mirror(format("{:>{}c}{}", 'A' + row, n - row, string(row, ' ')));
-    };
+    auto result = std::vector<std::string>(n, std::string(n, ' '));
 
-    return mirror(views::iota(0UL, n) | views::transform(to_row) | ranges::to<vector>());
+    for (auto i = 0UL; i < n; ++i) {
+        result[i][n - i - 1UL] = static_cast<char>('A' + i);
+        result[i]              = mirror(result[i]);
+    }
+
+    return mirror(result);
 }
 
 } // namespace diamond

@@ -1,9 +1,9 @@
 #pragma once
 
-#include <string>
+#include <string_view>
 
 namespace bob {
 
-auto hey(std::string msg) -> std::string;
+auto hey(std::string_view msg) -> std::string;
 
 }  // namespace bob

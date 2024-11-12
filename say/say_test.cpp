@@ -39,37 +39,45 @@ TEST_CASE("one_hundred_twenty_three") {
 }
 
 TEST_CASE("one_thousand") {
-    REQUIRE("one thousand" == say::in_english(1000ULL));
+    REQUIRE("one thousand" == say::in_english(1'000ULL));
 }
 
 TEST_CASE("one_thousand_two_hundred_thirty_four") {
-    REQUIRE("one thousand two hundred thirty-four" == say::in_english(1234ULL));
+    REQUIRE("one thousand two hundred thirty-four" == say::in_english(1'234ULL));
 }
 
 TEST_CASE("one_million") {
-    REQUIRE("one million" == say::in_english(1000ULL * 1000ULL));
+    REQUIRE("one million" == say::in_english(1'000ULL * 1'000ULL));
 }
 
 TEST_CASE("one_million_two") {
-    REQUIRE("one million two" == say::in_english(1000ULL * 1000ULL + 2ULL));
+    REQUIRE("one million two" == say::in_english(1'000ULL * 1'000ULL + 2ULL));
 }
 
 TEST_CASE("one_million_two_thousand_three_hundred_forty_five") {
     REQUIRE(
         "one million two thousand three hundred forty-five"
-        == say::in_english(1002345ULL)
+        == say::in_english(1'002'345ULL)
     );
 }
 
 TEST_CASE("one_billion") {
-    REQUIRE("one billion" == say::in_english(1000ULL * 1000ULL * 1000ULL));
+    REQUIRE("one billion" == say::in_english(1'000ULL * 1'000ULL * 1'000ULL));
 }
 
 TEST_CASE("a_really_big_number") {
     REQUIRE(
         "nine hundred eighty-seven billion six hundred fifty-four million "
         "three hundred twenty-one thousand one hundred twenty-three"
-        == say::in_english(987654321123ULL)
+        == say::in_english(987'654'321'123ULL)
+    );
+}
+
+TEST_CASE("a_really_big_number_with_teens") {
+    REQUIRE(
+        "nine hundred seventeen billion six hundred fifty-four million "
+        "three hundred twenty-one thousand one hundred twenty-three"
+        == say::in_english(917'654'321'123ULL)
     );
 }
 
@@ -79,7 +87,7 @@ TEST_CASE("raises_an_error_below_zero") {
 
 TEST_CASE("raises_an_error_for_one_trillion") {
     REQUIRE_THROWS_AS(
-        say::in_english(1000ULL * 1000ULL * 1000ULL * 1000ULL),
+        say::in_english(1'000ULL * 1'000ULL * 1'000ULL * 1'000ULL),
         std::domain_error
     );
 }
@@ -98,7 +106,7 @@ TEST_CASE("teens") {
     REQUIRE("twenty" == say::in_english(20ULL));
 }
 
-TEST_CASE("hundreed teens") {
-    REQUIRE("one hundred and ten" == say::in_english(110ULL));
+TEST_CASE("hundred teens") {
+    REQUIRE("one hundred ten" == say::in_english(110ULL));
 }
 #endif

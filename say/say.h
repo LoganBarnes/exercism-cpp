@@ -4,6 +4,6 @@
 
 namespace say {
 
-auto in_english(long long number) -> std::string;
+auto in_english(int64_t input) -> std::string;
 
 } // namespace say

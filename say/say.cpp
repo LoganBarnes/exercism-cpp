@@ -1,8 +1,10 @@
 #include "say.h"
 
 #include <array>
+#include <cassert>
 #include <iterator>
 #include <limits>
+#include <ranges>
 #include <regex>
 #include <sstream>
 #include <vector>
@@ -10,20 +12,16 @@
 namespace say {
 namespace {
 
+using ull = unsigned long long;
+
 auto join(std::vector<std::string> const& strings, char const* delim = "") {
     auto os = std::ostringstream{};
-    std::copy(
-        strings.begin(),
-        strings.end(),
-        std::ostream_iterator<std::string>(os, delim)
-    );
+    std::ranges::copy(strings, std::ostream_iterator<std::string>(os, delim));
     return os.str();
 }
 
-auto ones_in_english(unsigned long long number) -> std::string {
-    if (number > 9) {
-        throw std::domain_error("ones_in_english: " + std::to_string(number));
-    }
+auto ones_in_english(ull const number) -> std::string {
+    assert(number < 10UL);
 
     return std::array{
         "",
@@ -35,14 +33,12 @@ auto ones_in_english(unsigned long long number) -> std::string {
         "six",
         "seven",
         "eight",
-        "nine"
+        "nine",
     }[number];
 }
 
-auto tens_in_english(unsigned long long number) -> std::string {
-    if (9 < number) {
-        throw std::domain_error("tens_in_english: " + std::to_string(number));
-    }
+auto tens_in_english(ull const number) -> std::string {
+    assert(number < 10UL);
 
     return std::array{
         "",
@@ -54,18 +50,14 @@ auto tens_in_english(unsigned long long number) -> std::string {
         "sixty",
         "seventy",
         "eighty",
-        "ninety"
+        "ninety",
     }[number];
 }
 
-auto below_1000_in_english(unsigned long long number) -> std::string {
-    if (999 < number) {
-        throw std::domain_error(
-            "below_1000_in_english: " + std::to_string(number)
-        );
-    }
+auto below_1000_in_english(ull number) -> std::string {
+    assert(number < 1'000UL);
 
-    if (9 < number && number < 17) {
+    if (9UL < number && number < 20UL) {
         return std::array{
             "ten",
             "eleven",
@@ -73,8 +65,11 @@ auto below_1000_in_english(unsigned long long number) -> std::string {
             "thirteen",
             "fourteen",
             "fifteen",
-            "sixteen"
-        }[number % 10];
+            "sixteen",
+            "seventeen",
+            "eighteen",
+            "nineteen",
+        }[number % 10UL];
     }
 
     enum Index {
@@ -95,11 +90,17 @@ auto below_1000_in_english(unsigned long long number) -> std::string {
         "", // Index::Ones
     };
 
-    words[Index::Ones] = ones_in_english(number % 10);
-    number /= 10;
-    words[Index::Tens] = number > 0 ? tens_in_english(number % 10) : "";
-    number /= 10;
-    words[Index::HundredsNumber] = number > 0 ? ones_in_english(number) : "";
+    words[Index::Ones] = ones_in_english(number % 10ULL);
+    number /= 10ULL;
+
+    if (number > 0ULL) {
+        words[Index::Tens] = tens_in_english(number % 10ULL);
+    }
+    number /= 10ULL;
+
+    if (number > 0ULL) {
+        words[Index::HundredsNumber] = ones_in_english(number);
+    }
 
     if (!words[Index::HundredsNumber].empty()) {
         words[Index::HundredsWord] = " hundred";
@@ -118,17 +119,15 @@ auto below_1000_in_english(unsigned long long number) -> std::string {
 
 } // namespace
 
-auto in_english(long long input) -> std::string {
+auto in_english(long long const input) -> std::string {
     constexpr auto upper_bound = 999'999'999'999LL;
-    static_assert(std::numeric_limits<long long>::max() > upper_bound);
+    static_assert(upper_bound < std::numeric_limits<decltype(input)>::max());
 
-    if (upper_bound < input || input < 0) {
-        throw std::domain_error("in_english: " + std::to_string(input));
+    if (upper_bound < input || input < 0LL) {
+        throw std::domain_error(std::format("in_english: {}", input));
     }
 
-    auto number = static_cast<unsigned long long>(input);
-
-    if (number == 0ULL) {
+    if (input == 0LL) {
         return "zero";
     }
 
@@ -152,6 +151,8 @@ auto in_english(long long input) -> std::string {
         "", // Index::Hundreds,
     };
 
+    auto number = static_cast<ull>(input);
+
     for (auto index :
          {Index::Hundreds,
           Index::ThousandsNumber,
@@ -159,10 +160,6 @@ auto in_english(long long input) -> std::string {
           Index::BillionsNumber}) {
         words[index] = below_1000_in_english(number % 1'000ULL);
         number /= 1'000ULL;
-
-        if (number == 0) {
-            break;
-        }
     }
 
     if (!words[Index::BillionsNumber].empty()) {

@@ -36,7 +36,7 @@ else()
 endif()
 
 set_target_properties(${exercise} PROPERTIES
-    CXX_STANDARD 17
+    CXX_STANDARD 23
     CXX_STANDARD_REQUIRED OFF
     CXX_EXTENSIONS OFF
 )

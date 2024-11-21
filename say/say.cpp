@@ -7,20 +7,43 @@
 #include <sstream>
 #include <vector>
 
+#define REMOVE_AND
+
 namespace say {
 namespace {
 
-constexpr auto low_words = std::array{
+constexpr auto words_below_twenty = std::array{
     "",         "one",     "two",     "three",     "four",     "five",     "six",
     "seven",    "eight",   "nine",    "ten",       "eleven",   "twelve",   "thirteen",
     "fourteen", "fifteen", "sixteen", "seventeen", "eighteen", "nineteen",
 };
 
-constexpr auto tens_words = std::
-    array{"", "", "twenty", "thirty", "forty", "fifty", "sixty", "seventy", "eighty", "ninety"};
+constexpr auto tens_words = std::array{
+    "",
+    "",
+    "twenty",
+    "thirty",
+    "forty",
+    "fifty",
+    "sixty",
+    "seventy",
+    "eighty",
+    "ninety",
+};
 
-constexpr auto filler_words
-    = std::array{"", " ", "-", " hundred", " thousand", " million", " billion"};
+constexpr auto filler_words = std::array{
+    "",
+#if defined(REMOVE_AND)
+    " ",
+#else
+    " and ",
+#endif
+    "-",
+    " hundred",
+    "thousand",
+    "million",
+    "billion",
+};
 
 constexpr auto and_index      = 1UZ;
 constexpr auto hyphen_index   = 2UZ;
@@ -35,22 +58,21 @@ constexpr auto thousand = 1'000ULL;
 constexpr auto hundred  = 100ULL;
 constexpr auto ten      = 10ULL;
 
-template <typename... Args>
-auto ignore(Args&&...) {
-    // Used to explicitly ignore unused return values.
-}
-
+/// \brief Join a collection of strings into a single string separated by the
+///        provided delimiter.
 template <template <typename...> typename Container, typename String>
-auto join(Container<String> const& strings, std::string_view const delim) {
+auto join(Container<String> const& strings, std::string_view const delimiter) {
     auto os = std::ostringstream{};
-    ignore(std::ranges::copy(strings, std::ostream_iterator<String>(os, delim.data())));
+    std::ranges::copy(strings, std::ostream_iterator<String>(os, delimiter.data()));
     return os.str();
 }
 
+/// \brief Remove any leading or trailing spaces and remove multiple space occurrences.
 auto consolidate_spaces(std::string const& str) {
     return regex_replace(str, std::regex("^ +| +$|( ) +"), "$1");
 }
 
+/// \brief Transform a number below 1,000 into a plain english string.
 auto below_1000_in_english(uint64_t const number) -> std::string {
     assert(number < 1'000UL);
 
@@ -63,13 +85,26 @@ auto below_1000_in_english(uint64_t const number) -> std::string {
     auto const has_ones     = std::min(1ULL, ones);
     auto const is_teen      = static_cast<uint64_t>(1ULL == tens);
 
+    auto const has_and    = (has_ones | has_tens);
+    auto const has_hyphen = ((has_ones & has_tens) & (~is_teen));
+
     auto const words = std::vector<std::string_view>{
-        low_words[hundreds],
+        // Hundreds number
+        words_below_twenty[hundreds],
+        // Hundreds word
         filler_words[has_hundreds * hundred_index],
-        filler_words[(has_ones | has_tens) * and_index],
+
+        // "and" (if implemented)
+        filler_words[has_and * and_index],
+
+        // Tens number
         tens_words[tens],
-        filler_words[((has_ones & has_tens) & (~is_teen)) * hyphen_index],
-        low_words[(is_teen * 10ULL) + ones],
+
+        // Hyphen
+        filler_words[has_hyphen * hyphen_index],
+
+        // Teens or ones
+        words_below_twenty[(is_teen * 10ULL) + ones],
     };
 
     return join(words, "");
@@ -93,13 +128,27 @@ auto in_english(int64_t const input) -> std::string {
     auto const millions  = (number / million) % thousand;
     auto const billions  = (number / billion) % thousand;
 
+    auto const has_billions  = std::min(billions, 1ULL);
+    auto const has_millions  = std::min(millions, 1ULL);
+    auto const has_thousands = std::min(thousands, 1ULL);
+
     auto const words = std::vector<std::string>{
+        // Billions number
         below_1000_in_english(billions),
-        filler_words[std::min(billions, 1ULL) * billion_index],
+        // Billions word
+        filler_words[has_billions * billion_index],
+
+        // Millions number
         below_1000_in_english(millions),
-        filler_words[std::min(millions, 1ULL) * million_index],
+        // Millions word
+        filler_words[has_millions * million_index],
+
+        // Thousands number
         below_1000_in_english(thousands),
-        filler_words[std::min(thousands, 1ULL) * thousand_index],
+        // Thousands word
+        filler_words[has_thousands * thousand_index],
+
+        // Hundreds number and words
         below_1000_in_english(hundreds),
     };
 

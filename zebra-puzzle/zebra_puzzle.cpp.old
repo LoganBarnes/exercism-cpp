@@ -1,0 +1,192 @@
+#include "zebra_puzzle.h"
+
+#include <algorithm>
+#include <array>
+#include <functional>
+#include <ranges>
+#include <set>
+#include <variant>
+#include <vector>
+
+namespace zebra_puzzle {
+namespace {
+
+struct House {
+    std::string nationality = {};
+    std::string color       = {};
+    int         location    = {};
+    std::string pet         = {};
+    std::string drink       = {};
+    std::string hobby       = {};
+};
+
+struct HousePossibilities {
+    std::set<std::string> nationality = {};
+    std::set<std::string> color       = {};
+    std::set<int>         location    = {};
+    std::set<std::string> pet         = {};
+    std::set<std::string> drink       = {};
+    std::set<std::string> hobby       = {};
+};
+
+auto right_house(House const& house) -> HousePossibilities {
+    return {.location = {house.location + 1}};
+}
+
+auto adjacent_house(House const& house) -> HousePossibilities {
+    if (house.location == 1) {
+        return {.location = {2}};
+    } else if (house.location == 5) {
+        return {.location = {4}};
+    } else {
+        return {.location = {house.location - 1, house.location + 1}};
+    }
+}
+
+using Functor = std::function<HousePossibilities(House)>;
+
+struct Constraint {
+    House                                     input  = {};
+    std::variant<HousePossibilities, Functor> output = {};
+};
+
+struct PotentialHouse {
+    House              house         = {};
+    HousePossibilities possibilities = {};
+};
+
+struct Spec {
+    House   inputs;
+    Functor outputs;
+};
+
+using Const = std::variant<House, Spec>;
+
+struct HouseMatches {
+    House const& matcher;
+
+    auto operator()(PotentialHouse const& house) const {
+        if (!matcher.nationality.empty()) {
+            return matcher.nationality == house.house.nationality;
+        }
+        if (!matcher.color.empty()) {
+            return matcher.color == house.house.color;
+        }
+        if (0 != matcher.location) {
+            return matcher.location == house.house.location;
+        }
+        if (!matcher.pet.empty()) {
+            return matcher.pet == house.house.pet;
+        }
+        if (!matcher.drink.empty()) {
+            return matcher.drink == house.house.drink;
+        }
+        if (!matcher.hobby.empty()) {
+            return matcher.hobby == house.house.hobby;
+        }
+        return false;
+    }
+};
+
+auto append(HousePossibilities& self, HousePossibilities const& other) {
+    auto const nationality_size = self.nationality.size();
+    auto const color_size       = self.color.size();
+    auto const location_size    = self.location.size();
+    auto const pet_size         = self.pet.size();
+    auto const drink_size       = self.drink.size();
+    auto const hobby_size       = self.hobby.size();
+
+    self.nationality.insert(other.nationality.begin(), other.nationality.end());
+    self.color.insert(other.color.begin(), other.color.end());
+    self.location.insert(other.location.begin(), other.location.end());
+    self.pet.insert(other.pet.begin(), other.pet.end());
+    self.drink.insert(other.drink.begin(), other.drink.end());
+    self.hobby.insert(other.hobby.begin(), other.hobby.end());
+
+    return std::ranges::any_of(
+        std::array{
+            nationality_size == self.nationality.size(),
+            color_size == self.color.size(),
+            location_size == self.location.size(),
+            pet_size == self.pet.size(),
+            drink_size == self.drink.size(),
+            hobby_size == self.hobby.size(),
+        },
+        [](auto const b) { return b; }
+    );
+}
+
+auto const constraints = std::vector<Constraint>{
+    {{.nationality = "English"}, HousePossibilities{.color = {"Red"}}},
+    {{.nationality = "English"}, HousePossibilities{.color = {"Red"}}},
+    {{.nationality = "Spaniard"}, HousePossibilities{.pet = {"Dog"}}},
+    {{.color = "Green"}, HousePossibilities{.drink = {"Coffee"}}},
+    {{.nationality = "Ukrainian"}, HousePossibilities{.drink = {"Tea"}}},
+    {{.color = "Green"}, right_house},
+    {{.pet = "Snail"}, HousePossibilities{.hobby = {"Dancing"}}},
+    {{.color = "Yellow"}, HousePossibilities{.hobby = {"Painting"}}},
+    {{.location = 3}, HousePossibilities{.drink = {"Milk"}}},
+    {{.nationality = "Norwegian"}, HousePossibilities{.location = {1}}},
+    {{.hobby = "Reading"}, adjacent_house},
+    {{.drink = "Orange"}, HousePossibilities{.hobby = {"Football"}}},
+    {{.nationality = "Japanese"}, HousePossibilities{.hobby = {"Chess"}}},
+};
+
+class Houses {
+public:
+    auto apply(Constraint const& constraint) -> bool;
+
+    auto find(House const& house) -> PotentialHouse&;
+
+private:
+    std::vector<PotentialHouse> houses_;
+};
+
+struct Visitor {
+    PotentialHouse& house;
+
+    auto operator()(HousePossibilities const& possibilities) {
+        return append(house.possibilities, possibilities);
+    }
+
+    auto operator()(Functor const& functor) {
+        auto const possibilities = functor(house.house);
+        return (*this)(possibilities);
+    }
+};
+
+auto Houses::apply([[maybe_unused]] Constraint const& constraint) -> bool {
+    auto& potential_house = find(constraint.input);
+
+    return std::visit(Visitor{potential_house}, constraint.output);
+}
+
+auto Houses::find(House const& house) -> PotentialHouse& {
+    if (auto const iter = std::ranges::find_if(houses_, HouseMatches{house});
+        iter != houses_.end()) {
+        return *iter;
+    }
+    return houses_.emplace_back();
+}
+
+} // namespace
+
+auto solve() -> Solution {
+    auto houses = Houses{};
+
+    auto state_changed = false;
+    do {
+        state_changed = false;
+
+        for (auto const& constraint : constraints) {
+            state_changed = houses.apply(constraint) || state_changed;
+        }
+    } while (state_changed);
+
+    return {
+        .drinksWater = houses.find(House{.drink = "Water"}).house.nationality,
+        .ownsZebra   = houses.find(House{.pet = "Zebra"}).house.nationality,
+    };
+}
+
+} // namespace zebra_puzzle

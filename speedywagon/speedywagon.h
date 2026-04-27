@@ -1,8 +1,10 @@
 #pragma once
 
+#include <algorithm>
+#include <functional>
+#include <numeric>
 #include <string>
 #include <vector>
-#include <numeric>
 
 namespace speedywagon {
 
@@ -12,21 +14,21 @@ struct pillar_men_sensor {
     std::vector<int> data     = {};
 };
 
-inline auto uv_light_heuristic(std::vector<int> const* const data_array) {
-    auto const sum = std::accumulate(data_array->begin(), data_array->end(), 0);
-    auto const avg = static_cast<double>(sum) / static_cast<double>(data_array->size());
+inline auto uv_light_heuristic(std::vector<int> const* const data) {
+    auto const sum = std::accumulate(data->begin(), data->end(), 0);
+    auto const avg = static_cast<double>(sum) / static_cast<double>(data->size());
 
-    return static_cast<int>(std::count_if(data_array->begin(), data_array->end(), [avg](auto const element) { return element > avg; })) + 1;
+    return static_cast<int>(std::ranges::count_if(*data, std::bind_front(std::less<double>{}, avg))) + 1;
 }
 
-inline auto connection_check(pillar_men_sensor const* const sensor) { return nullptr != sensor; }
+inline auto connection_check(pillar_men_sensor const* const s) { return nullptr != s; }
 
-inline auto activity_counter(pillar_men_sensor const* const sensors, size_t const size){
-    return std::accumulate(sensors, sensors + size, 0, [](auto total, auto const& sensor) { return total + sensor.activity;} );
+inline auto activity_counter(pillar_men_sensor const* const s, size_t const len) {
+    return std::accumulate(s, s + len, 0, [](auto tot, auto const& sen) { return tot + sen.activity; });
 }
 
-inline auto alarm_control(pillar_men_sensor const* const sensor) { return sensor && (sensor->activity > 0); }
+inline auto alarm_control(pillar_men_sensor const* const s) { return s && (s->activity > 0); }
 
-inline auto uv_alarm(pillar_men_sensor const* const sensor) { return sensor && (uv_light_heuristic(&sensor->data) > sensor->activity); }
+inline auto uv_alarm(pillar_men_sensor const* const s) { return s && (uv_light_heuristic(&(s->data)) > s->activity); }
 
 } // namespace speedywagon

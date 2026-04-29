@@ -1,44 +1,38 @@
 #include "knapsack.h"
 
+#include <unordered_set>
+
 namespace knapsack {
 namespace {
 
-struct TreeNode {
-    Item                  totals   = {};
-    std::vector<TreeNode> children = {};
-};
-
-auto add_children(
-    int const max_weight, TreeNode& node, std::vector<Item> const& items
-) -> void {
-    auto const num_items = items.size();
-    node.children.reserve(num_items);
-
-    for (auto i = 0U; i < num_items; ++i) {
-
-        auto child_node   = TreeNode{};
-        child_node.totals = node.totals;
-        child_node.totals.value += items[i].value;
-        child_node.totals.weight += items[i].weight;
-
-        // Weights are strictly positive so we don't need to
-        // check more items if weight == max_weight.
-        if (child_node.totals.weight < max_weight) {
-            node.children.push_back(child_node);
-
-            auto items_copy = items;
-            items_copy.erase(items_copy.begin() + i);
-
-            add_children(max_weight, node.children.back(), items_copy);
-        }
+auto find_best_value(
+    int const                         remaining_weight,
+    int const                         current_value,
+    std::vector<Item> const&          items,
+    std::unordered_set<size_t> const& available_items
+) -> int {
+    if (remaining_weight < 0) {
+        return 0;
     }
-}
+    if (remaining_weight == 0) {
+        return current_value;
+    }
 
-auto find_best_value(TreeNode const& node) -> int {
-    auto best_value = node.totals.value;
+    auto best_value = current_value;
 
-    for (auto const& child : node.children) {
-        best_value = std::max(best_value, find_best_value(child));
+    for (auto const i : available_items) {
+        auto const& item = items[i];
+
+        auto remaining_items = available_items;
+        remaining_items.erase(i);
+
+        auto const value = find_best_value(
+            remaining_weight - item.weight,
+            current_value + item.value,
+            items,
+            remaining_items
+        );
+        best_value = std::max(best_value, value);
     }
 
     return best_value;
@@ -48,9 +42,13 @@ auto find_best_value(TreeNode const& node) -> int {
 
 auto maximum_value(int const max_weight, std::vector<Item> const& items)
     -> int {
-    auto tree = TreeNode{};
-    add_children(max_weight, tree, items);
-    return find_best_value(tree);
+    auto       available_items = std::unordered_set<size_t>();
+    auto const item_count      = items.size();
+    for (auto i = 0U; i < item_count; ++i) {
+        available_items.insert(i);
+    }
+
+    return find_best_value(max_weight, 0, items, available_items);
 }
 
 } // namespace knapsack

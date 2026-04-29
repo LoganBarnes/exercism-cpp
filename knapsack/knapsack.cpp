@@ -1,54 +1,72 @@
 #include "knapsack.h"
 
-#include <unordered_set>
+#include <iostream>
 
 namespace knapsack {
 namespace {
 
-auto find_best_value(
-    int const                         remaining_weight,
-    int const                         current_value,
-    std::vector<Item> const&          items,
-    std::unordered_set<size_t> const& available_items
-) -> int {
-    if (remaining_weight < 0) {
-        return 0;
+using Key    = std::vector<bool>;
+using Totals = std::unordered_map<std::vector<bool>, Item>;
+
+int iter = 0;
+
+auto best_sub_sack(
+    Totals&                  totals,
+    Key                      key,
+    Item                     total,
+    size_t const             index,
+    int const                max_weight,
+    std::vector<Item> const& items
+) {
+    auto const item_count = items.size();
+
+    if (index >= item_count) {
+        return;
     }
-    if (remaining_weight == 0) {
-        return current_value;
-    }
+    key[index] = true;
 
-    auto best_value = current_value;
-
-    for (auto const i : available_items) {
-        auto const& item = items[i];
-
-        auto remaining_items = available_items;
-        remaining_items.erase(i);
-
-        auto const value = find_best_value(
-            remaining_weight - item.weight,
-            current_value + item.value,
-            items,
-            remaining_items
-        );
-        best_value = std::max(best_value, value);
+    // unused?
+    if (totals.find(key) != totals.end()) {
+        return;
     }
 
-    return best_value;
+    ++iter;
+
+    auto const& item = items[index];
+
+    total.weight += item.weight;
+    total.value += item.value;
+
+    if (total.weight <= max_weight) {
+        totals[key] = total;
+
+        for (auto i = index + 1; i < item_count; ++i) {
+            best_sub_sack(totals, key, total, i, max_weight, items);
+        }
+    }
 }
 
 } // namespace
 
 auto maximum_value(int const max_weight, std::vector<Item> const& items)
     -> int {
-    auto       available_items = std::unordered_set<size_t>();
-    auto const item_count      = items.size();
-    for (auto i = 0U; i < item_count; ++i) {
-        available_items.insert(i);
+    auto const key = std::vector<bool>(items.size(), false);
+
+    auto totals = Totals{};
+    iter = 0;
+
+    for (auto i = 0U; i < items.size(); ++i) {
+        best_sub_sack(totals, key, {}, i, max_weight, items);
     }
 
-    return find_best_value(max_weight, 0, items, available_items);
+    std::cout << items.size() << ": " << iter << std::endl;
+
+    auto best_value = 0;
+    for (auto const& total : totals) {
+        best_value = std::max(best_value, total.second.value);
+    }
+
+    return best_value;
 }
 
 } // namespace knapsack

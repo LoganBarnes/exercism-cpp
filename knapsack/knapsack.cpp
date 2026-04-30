@@ -1,7 +1,6 @@
 #include "knapsack.h"
 
-#include <iostream>
-#include <numeric>
+#include <algorithm>
 
 namespace knapsack {
 namespace {

@@ -1,14 +1,13 @@
 #include "knapsack.h"
 
 #include <iostream>
+#include <numeric>
 
 namespace knapsack {
 namespace {
 
-using Knapsacks = std::vector<Item>;
-
 auto compute_knapsacks(
-    Knapsacks&               knapsacks,
+    std::vector<int>&        values,
     Item                     total,
     size_t const             index,
     int const                max_weight,
@@ -25,10 +24,10 @@ auto compute_knapsacks(
     total.value += item.value;
 
     if (total.weight <= max_weight) {
-        knapsacks.push_back(total);
+        values.push_back(total.value);
 
         for (auto i = index + 1; i < item_count; ++i) {
-            compute_knapsacks(knapsacks, total, i, max_weight, items);
+            compute_knapsacks(values, total, i, max_weight, items);
         }
     }
 }
@@ -37,17 +36,17 @@ auto compute_knapsacks(
 
 auto maximum_value(int const max_weight, std::vector<Item> const& items)
     -> int {
-    auto knapsacks = Knapsacks{};
+    auto values = std::vector<int>{};
 
     for (auto i = 0U; i < items.size(); ++i) {
-        compute_knapsacks(knapsacks, {}, i, max_weight, items);
+        compute_knapsacks(values, {}, i, max_weight, items);
     }
 
-    if (knapsacks.empty()) {
+    if (values.empty()) {
         return 0;
     }
 
-    return std::max_element(knapsacks.begin(), knapsacks.end())->value;
+    return *std::max_element(values.begin(), values.end());
 }
 
 } // namespace knapsack

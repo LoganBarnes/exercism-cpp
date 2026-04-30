@@ -5,28 +5,34 @@
 namespace knapsack {
 namespace {
 
-auto compute_knapsacks(
+struct IterationData {
+    Item   total;
+    size_t index;
+};
+
+auto compute_values_recursive(
     std::vector<int>&        values,
-    Item                     total,
-    size_t const             index,
+    IterationData            data,
     int const                max_weight,
     std::vector<Item> const& items
 ) {
     auto const item_count = items.size();
 
-    if (index >= item_count) {
+    if (data.index >= item_count) {
         return;
     }
-    auto const& item = items[index];
+    auto const& item = items[data.index];
 
-    total.weight += item.weight;
-    total.value += item.value;
+    data.total.weight += item.weight;
+    data.total.value += item.value;
 
-    if (total.weight <= max_weight) {
-        values.push_back(total.value);
+    if (data.total.weight <= max_weight) {
+        values.push_back(data.total.value);
 
-        for (auto i = index + 1; i < item_count; ++i) {
-            compute_knapsacks(values, total, i, max_weight, items);
+        for (auto i = data.index + 1; i < item_count; ++i) {
+            compute_values_recursive(
+                values, {data.total, i}, max_weight, items
+            );
         }
     }
 }
@@ -38,7 +44,7 @@ auto maximum_value(int const max_weight, std::vector<Item> const& items)
     auto values = std::vector<int>{};
 
     for (auto i = 0U; i < items.size(); ++i) {
-        compute_knapsacks(values, {}, i, max_weight, items);
+        compute_values_recursive(values, {{}, i}, max_weight, items);
     }
 
     if (values.empty()) {

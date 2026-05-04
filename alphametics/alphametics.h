@@ -1,11 +1,13 @@
 #pragma once
 
 #include <optional>
-#include <string>
+#include <string_view>
 #include <unordered_map>
 
 namespace alphametics {
 
-auto solve(std::string letters) -> std::optional<std::unordered_map<char, int>>;
+using CharNumberMap = std::unordered_map<char, char>;
+
+auto solve(std::string_view str) -> std::optional<CharNumberMap>;
 
 } // namespace alphametics

@@ -1,6 +1,8 @@
 #include "alphametics.h"
 
 #include <algorithm>
+#include <numeric>
+#include <string>
 #include <unordered_set>
 #include <vector>
 
@@ -17,69 +19,132 @@ auto is_alpha(char const ch) {
     return static_cast<bool>(std::isalpha(static_cast<unsigned char>(ch)));
 }
 
-auto is_space(char const ch) {
-    return static_cast<bool>(std::isspace(static_cast<unsigned char>(ch)));
-}
+struct ToNumber {
+    CharNumberMap const& key;
 
-auto remove_whitespace(std::string str) {
-    auto const last = std::remove_if(str.begin(), str.end(), is_space);
-    str.erase(last, str.end());
-    return str;
-}
-
-struct NumbersAndSum {
-    std::vector<std::string> numbers = {};
-    std::string              sum     = {};
+    auto operator()(std::string const& str) const {
+        auto scale  = 1;
+        auto result = 0;
+        for (auto const ch : str) {
+            auto const digit = key.at(ch);
+            result           = (result * scale) + digit;
+            scale *= 10;
+        }
+        return result;
+    }
 };
 
-auto split(std::string_view const str, char const delim) {
-    auto splits = std::vector<std::string_view>();
+auto sum(std::vector<std::string> const& addends, CharNumberMap const& key) {
+    auto numbers = std::vector<int>(addends.size(), 0);
+    std::transform(addends.begin(), addends.end(), numbers.begin(), ToNumber{key});
+    return std::accumulate(numbers.begin(), numbers.end(), 0);
+}
 
-    auto start     = size_t{0U};
-    auto delim_pos = std::string::npos;
-    do {
-        delim_pos = str.find(delim, start);
-        splits.push_back(str.substr(start, delim_pos - start));
-        start = delim_pos + 1U;
-    } while (delim_pos != std::string::npos);
+auto check_solution(std::vector<std::string> const& addends, std::string const& sum_str, CharNumberMap const& key) {
+    return sum(addends, key) == sum({sum_str}, key);
+}
 
-    return splits;
+auto solve(
+    CharNumberMap const&            key,
+    std::vector<std::string> const& addends,
+    std::string const&              sum_str,
+    std::unordered_set<char> const& letters,
+    std::unordered_set<int> const&  numbers
+) -> std::optional<CharNumberMap> {
+
+    if (letters.empty()) {
+        if (check_solution(addends, sum_str, key)) {
+            return key;
+        }
+        return std::nullopt;
+    }
+
+    for (auto i : numbers) {
+        auto current_key       = key;
+        auto remaining_letters = letters;
+        auto remaining_numbers = numbers;
+        current_key.try_emplace(*remaining_letters.begin(), i);
+
+        remaining_numbers.erase(i);
+        remaining_letters.erase(remaining_letters.begin());
+        return solve(key, addends, sum_str, remaining_letters, remaining_numbers);
+    }
+
+    return std::nullopt;
 }
 
 } // namespace
 
-auto solve(std::string str) -> std::optional<std::unordered_map<char, int>> {
+auto solve(std::string_view const str) -> std::optional<CharNumberMap> {
+    bool new_number       = true;
+    bool is_sum           = false;
+    auto letters          = std::unordered_set<char>{};
+    auto non_zero_letters = std::unordered_set<char>{};
+    auto addends          = std::vector<std::string>{};
+    auto sum              = std::string{};
 
-#if defined(PRINT_STUFF)
-    std::cout << str << std::endl;
-#endif
+    auto const char_count = str.size();
+    for (auto i = 0UL; i < char_count; ++i) {
+        auto const ch = str[i];
 
-    str = remove_whitespace(str);
+        if ('=' == ch) {
+            is_sum     = true;
+            new_number = true;
 
-#if defined(PRINT_STUFF)
-    std::cout << str << std::endl;
-#endif
+        } else if ('+' == ch) {
+            new_number = true;
 
-    auto const equals = str.find("==");
-    if (equals == std::string_view::npos) {
+        } else if (is_alpha(ch)) {
+            letters.insert(ch);
+
+            if (is_sum) {
+                sum.push_back(ch);
+
+            } else {
+                if (new_number) {
+                    addends.emplace_back();
+                }
+                addends.back().push_back(ch);
+            }
+
+            if (new_number) {
+                non_zero_letters.insert(ch);
+                new_number = false;
+            }
+
+        } else {
+            // whitespace can be ignored
+        }
+    }
+
+    if (!is_sum) {
+        return std::nullopt;
+    }
+    if (letters.size() > 10U) {
         return std::nullopt;
     }
 
-    auto const numbers_string = str.substr(0, equals);
-    auto const sum_string     = str.substr(equals + 2);
-    auto const number_strings = split(numbers_string, '+');
-    auto       letters        = std::unordered_set<char>{};
-    std::copy_if(str.begin(), str.end(), std::inserter(letters, letters.end()), is_alpha);
-
 #if defined(PRINT_STUFF)
-    std::cout << sum_string << std::endl;
-    std::cout << numbers_string << std::endl;
-    for (auto const& number : number_strings) {
-        std::cout << "\t" << number << std::endl;
+    std::cout << str << std::endl;
+
+    std::cout << "{ ";
+    for (auto const ch : letters) {
+        std::cout << ch << " ";
     }
+    std::cout << "}" << std::endl;
+
+    std::cout << sum << std::endl;
+    for (auto const& addend : addends) {
+        std::cout << "\t" << addend << std::endl;
+    }
+
 #endif
 
-    return std::nullopt;
+    auto ordered_numbers = std::vector<int>{10};
+    std::iota(ordered_numbers.begin(), ordered_numbers.end(), 0);
+    auto numbers = std::unordered_set<int>{ordered_numbers.begin(), ordered_numbers.end()};
+
+    return solve(CharNumberMap{}, addends, sum, letters, numbers);
 }
 
 } // namespace alphametics

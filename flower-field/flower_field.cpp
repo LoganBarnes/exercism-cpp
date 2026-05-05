@@ -5,37 +5,29 @@ namespace flower_field {
 using Counts1d = std::vector<uint8_t>;
 using Counts2d = std::vector<Counts1d>;
 
-template <typename Callback>
-auto iterate(size_t const row_count, size_t const col_count, Callback const& callback) {
-    for (auto row_i = 0U; row_i < row_count; ++row_i) {
-        for (auto col_i = 0U; col_i < col_count; ++col_i) {
-            callback(row_i, col_i);
+template <bool Adjacent, typename Output, typename Callback>
+auto iterate(Output& output, size_t const rows, size_t const cols, Callback const& callback) {
+    for (auto row_i = 0U; row_i < rows; ++row_i) {
+        for (auto col_i = 0U; col_i < cols; ++col_i) {
+            if constexpr (Adjacent) {
+                if (col_i > 0U) {
+                    output[row_i][col_i] += callback(row_i, col_i - 1U);
+                }
+                if (col_i + 1U < cols) {
+                    output[row_i][col_i] += callback(row_i, col_i + 1U);
+                }
+            } else {
+                output[row_i][col_i] = callback(row_i, col_i);
+            }
         }
     }
-}
-
-template <typename Callback>
-auto safely_count_1d(size_t const row_count, size_t const col_count, Callback const& add) {
-    auto counts = Counts2d(row_count, Counts1d(col_count, 0U));
-    auto count  = [&counts, col_count, &add](size_t const row_i, size_t const col_i) {
-        if (col_i > 0U) {
-            counts[row_i][col_i] += add(row_i, col_i - 1U);
-        }
-        if (col_i + 1U < col_count) {
-            counts[row_i][col_i] += add(row_i, col_i + 1U);
-        }
-    };
-
-    iterate(row_count, col_count, count);
-
-    return counts;
 }
 
 struct IfFlower {
     Field const& field;
 
-    auto operator()(size_t const row_i, size_t const col_i) const -> size_t {
-        return field[row_i][col_i] == '*' ? 1U : 0U;
+    auto operator()(size_t const row, size_t const col) const -> size_t {
+        return field[row][col] == '*' ? 1U : 0U;
     }
 };
 
@@ -44,8 +36,25 @@ struct IfFlowerAndCount {
     Counts2d const& counts;
     IfFlower        if_flower = {field};
 
-    auto operator()(size_t const col_i, size_t const row_i) const -> size_t {
-        return if_flower(row_i, col_i) + counts[row_i][col_i];
+    auto operator()(size_t const col, size_t const row) const -> size_t {
+        return if_flower(row, col) + counts[row][col];
+    }
+};
+
+struct CountIfSpace {
+    Field const&    field;
+    Counts2d const& col_counts;
+    Counts2d const& row_counts;
+
+    auto operator()(size_t const row, size_t const col) const -> char {
+        constexpr auto zero = static_cast<uint8_t>('0');
+
+        auto const count = col_counts[row][col] + row_counts[col][row];
+        auto const ch    = field[row][col];
+        if ((' ' == ch) && (0U != count)) {
+            return static_cast<char>(zero + count);
+        }
+        return ch;
     }
 };
 
@@ -60,23 +69,14 @@ auto annotate(Field const& field) -> Field {
         return field;
     }
 
-    auto col_counts = safely_count_1d(row_count, col_count, IfFlower{field});
-    auto row_counts = safely_count_1d(col_count, row_count, IfFlowerAndCount{field, col_counts});
+    auto col_counts = Counts2d{row_count, Counts1d(col_count, 0U)};
+    iterate<true>(col_counts, row_count, col_count, IfFlower{field});
+
+    auto row_counts = Counts2d{col_count, Counts1d(row_count, 0U)};
+    iterate<true>(row_counts, col_count, row_count, IfFlowerAndCount{field, col_counts});
 
     auto annotated = field;
-
-    constexpr auto zero = static_cast<uint8_t>('0');
-
-    iterate(
-        row_count,
-        col_count,
-        [&annotated, &col_counts, &row_counts](size_t const row_i, size_t const col_i) {
-            auto const count = col_counts[row_i][col_i] + row_counts[col_i][row_i];
-            if ((' ' == annotated[row_i][col_i]) && (0U != count)) {
-                annotated[row_i][col_i] = static_cast<char>(zero + count);
-            }
-        }
-    );
+    iterate<false>(annotated, row_count, col_count, CountIfSpace{field, col_counts, row_counts});
 
     return annotated;
 }

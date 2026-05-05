@@ -25,9 +25,13 @@ struct ToNumber {
     auto operator()(std::string const& str) const {
         auto scale  = 1;
         auto result = 0;
-        for (auto const ch : str) {
+        for (auto iter = str.crbegin(); iter != str.crend(); ++iter) {
+            auto const ch = *iter;
+            if (key.find(ch) == key.end()) {
+                throw std::runtime_error("Key does not contain " + std::string{ch});
+            }
             auto const digit = key.at(ch);
-            result           = (result * scale) + digit;
+            result += digit * scale;
             scale *= 10;
         }
         return result;
@@ -41,7 +45,17 @@ auto sum(std::vector<std::string> const& addends, CharNumberMap const& key) {
 }
 
 auto check_solution(std::vector<std::string> const& addends, std::string const& sum_str, CharNumberMap const& key) {
-    return sum(addends, key) == sum({sum_str}, key);
+#if defined(PRINT_STUFF)
+    std::cout << "Key: ";
+    for (auto const& [ch, i] : key) {
+        std::cout << "{" << ch << ":" << i << "}";
+    }
+    std::cout << std::endl;
+#endif
+    auto const lhs = sum(addends, key);
+    auto const rhs = sum({sum_str}, key);
+
+    return lhs == rhs;
 }
 
 auto solve(
@@ -49,7 +63,8 @@ auto solve(
     std::vector<std::string> const& addends,
     std::string const&              sum_str,
     std::unordered_set<char> const& letters,
-    std::unordered_set<int> const&  numbers
+    std::unordered_set<int> const&  numbers,
+    std::unordered_set<char> const& non_zero_letters
 ) -> std::optional<CharNumberMap> {
 
     if (letters.empty()) {
@@ -60,14 +75,23 @@ auto solve(
     }
 
     for (auto i : numbers) {
+        auto const ch = *letters.begin();
+
+        if (0 == i && non_zero_letters.find(ch) != non_zero_letters.end()) {
+            continue;
+        }
+
         auto current_key       = key;
         auto remaining_letters = letters;
         auto remaining_numbers = numbers;
-        current_key.try_emplace(*remaining_letters.begin(), i);
+        current_key.try_emplace(ch, i);
 
         remaining_numbers.erase(i);
-        remaining_letters.erase(remaining_letters.begin());
-        return solve(key, addends, sum_str, remaining_letters, remaining_numbers);
+        remaining_letters.erase(ch);
+        if (auto result
+            = solve(current_key, addends, sum_str, remaining_letters, remaining_numbers, non_zero_letters)) {
+            return result;
+        }
     }
 
     return std::nullopt;
@@ -140,11 +164,11 @@ auto solve(std::string_view const str) -> std::optional<CharNumberMap> {
 
 #endif
 
-    auto ordered_numbers = std::vector<int>{10};
+    auto ordered_numbers = std::vector<int>(10);
     std::iota(ordered_numbers.begin(), ordered_numbers.end(), 0);
     auto numbers = std::unordered_set<int>{ordered_numbers.begin(), ordered_numbers.end()};
 
-    return solve(CharNumberMap{}, addends, sum, letters, numbers);
+    return solve(CharNumberMap{}, addends, sum, letters, numbers, non_zero_letters);
 }
 
 } // namespace alphametics

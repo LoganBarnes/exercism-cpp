@@ -6,7 +6,7 @@
 
 namespace alphametics {
 
-using CharNumberMap = std::unordered_map<char, char>;
+using CharNumberMap = std::unordered_map<char, int>;
 
 auto solve(std::string_view str) -> std::optional<CharNumberMap>;
 

@@ -2,7 +2,7 @@
 
 namespace flower_field {
 
-using Counts1d = std::vector<size_t>;
+using Counts1d = std::vector<uint8_t>;
 using Counts2d = std::vector<Counts1d>;
 
 template <typename Callback>
@@ -61,19 +61,18 @@ auto annotate(Field const& field) -> Field {
     }
 
     auto col_counts = safely_count_1d(row_count, col_count, IfFlower{field});
-
     auto row_counts = safely_count_1d(col_count, row_count, IfFlowerAndCount{field, col_counts});
 
     auto annotated = field;
 
-    constexpr auto zero = static_cast<size_t>('0');
+    constexpr auto zero = static_cast<uint8_t>('0');
 
     iterate(
         row_count,
         col_count,
         [&annotated, &col_counts, &row_counts](size_t const row_i, size_t const col_i) {
             auto const count = col_counts[row_i][col_i] + row_counts[col_i][row_i];
-            if (annotated[row_i][col_i] == ' ' && count != 0) {
+            if ((' ' == annotated[row_i][col_i]) && (0U != count)) {
                 annotated[row_i][col_i] = static_cast<char>(zero + count);
             }
         }
